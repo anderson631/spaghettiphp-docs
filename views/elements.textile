@@ -1,0 +1,36 @@
+p(highlight). Por muitas vezes você ocupa pequenos trechos de código em várias páginas, porém estes trechos não fazem parte de um "layout":/docs/layouts. Não se repita, utilize __elements__. Elementos são arquivos de "View":/docs/views que servem para armazenar pequenos trechos de código (__snippets__) compartilhados por outras __views__ diferentes.
+
+Quer um exemplo? Vamos supor que você tenha um formulário de login no topo de sua página, e queira colocar outro formulário no meio do conteúdo. Você pode pensar, então, em copiar e colar o código. Porém, ao invés de copiar e colar o código HTML deste formulário cada vez que você precisar usá-lo, você pode criar um __element__ com este HTML e então o importá-lo nos locais onde desejar.
+
+Supondo que algum dia você precise alterar o seu formulário de login, terá que fazê-lo uma única vez. Com __elements__ você ganha na manutenção, pois cada um destes trechos de código fica centralizado em um arquivo.
+
+h2. Criando um __element__
+
+A criação é muito simples. Crie um arquivo com o nome desejado para seu __element__, com a extensão @.phtm@, logo na pasta @app/views/@, sem colocar em nenhuma subpasta. No início do nome do arquivo deve constar um caracter __underscore__ (@_@), para sinalizar que aquele arquivo é um __element__. Veja o exemplo abaixo:
+
+pre. app/views/_formulario_de_login.phtm
+
+Quando você quiser incluir o conteúdo deste __element__ em alguma outra __view__, seja ela estática, dinâmica ou um __layout__, basta utilizar o método __$this->element()__, passando como parâmetro o nome do elemento sem o __underscore__ nem a extensão do arquivo:
+
+pre. <?php echo $this->element("formulario_de_login"); ?>
+
+E pronto. O conteúdo do elemento será renderizado tantas vezes quanto for chamado, e nos lugares onde for chamado.
+
+h3. Passando parâmetros para __elements__
+
+Hora ou outra você pode precisar passar conteúdo dinâmico para um __element__. Por exemplo, você pode criar um __element__ para armazenar um elemento @<select>@ com a lista dos estados nacionais. Este elemento de formulário seria utilizado em diferentes formulários no seu site.
+
+Porém, você pode querer passar para este campo de formulário qual é o estado que deve estar selecionado, baseado no estado onde o usuário logado mora. Sem __elements__, além de manter diversos formulários por todo o site, você teria que reescrever código e a cada manutenção, bom, você já sabe.
+
+Para passar variáveis para um __element__, ao usar o método @$this->element()@ você pode passar como segundo parâmetro um __array__, onde a chave de um item é o nome da variável e seu valor é o conteúdo da variável, como no exemplo:
+
+pre. $options = array(
+     "selectedState" => "SP"
+);
+echo $this->element("formulario_dos_estados", $options);
+
+E então, dentro do __element__ você possui condições de manipular esta variável, chamando-a pelo nome.
+
+pre. <?php echo $selectedState; ?>
+
+__Elements__ são um instrumento bastante interessante de manter o código reaproveitável e de mais fácil manutenção. Use sem moderação ;D

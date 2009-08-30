@@ -1,0 +1,220 @@
+p(highlight). Você não precisa escrever tanto SQL. Os modelos de dados do Spaghetti*, além de facilitarem a iteração entre registros, também geram todo o SQL necessário para as suas consultas, através de __arrays__ simples, apenas com código PHP.
+
+Os __models__ do Spaghetti são os responsáveis por todas as tarefas de banco de dados. Desde criar e alterar registros até buscas complexas e relacionamentos entre tabelas, sem escrever uma única linha de SQL. Mas não se preocupe: caso você precise ser ainda mais específico, você também pode digitar diretamente suas consultas.
+
+h2. Criando Modelos
+
+Dentro da estrutura de arquivos do Spaghetti*, os modelos se encontram em @app/models@, e seguem a convenção @nome_do_modelo.php@. Basicamente, um modelo é apenas uma definição de classe vazia:
+
+pre. class Users extends AppModel { }
+
+Através da extensão da classe @AppModel@, @Users@ herda todos os métodos necessários para qualquer operação de banco de dados. Além disso, o Spaghetti* já assume que o nome da tabela do banco de dados associada a esse modelo chama-se @users@. Entretanto, caso você use nomes de tabelas diferentes dos nomes dos modelos, é possível definir o nome manualmente através da variável @table@.
+
+pre. class Users extends AppModel {
+    public $table = "users_table";
+}
+
+h2. Buscando Registros
+
+h3. @findAll(@ mixed $conditions, mixed $order, string $limit, integer $recursion @)@
+
+|_. mixed $conditions | Array ou string contendo as condições para a busca |
+|_. mixed $order | Array ou string que define a ordenação dos registros |
+|_. string $limit | Limite de registros a serem recuperados |
+|_. integer $recursion | Número de recursões para tabelas relacionadas |
+
+O método @Model::findAll()@ retorna todos os registros que obedeçam �  condição @$conditions@ especificada, ordenados por @$order@, limitando a @$limit@ registros.
+
+O parâmetro @$conditions@ pode ser uma string SQL qualquer, como @username = "admin"@ ou @text LIKE "%spaghetti%"@. Entretanto, você não estaria usando de todo o potencial do Spaghetti*. Através de arrays, é possível criar uma gama enorme de condições diferentes.
+
+pre. $conditions = array(
+    "username" => "admin",
+    "text LIKE" => "%spaghetti%"
+); // equivalente a username = "admin" AND text LIKE "%spaghetti%"
+$this->Users->findAll($conditions);
+
+Além de consultas simples como as usadas acima, o Spaghetti* também permite condições mais complexas, como você pode descobrir em "Condições Complexas":/docs/condicoes-complexas.
+
+A ordenação de registros funciona de maneira semelhante, utilizando strings ou arrays. Arrays seguem a seguinte estrutura:
+
+pre. $order = array("id" => "ASC", "date" => "DESC");
+
+O retorno do método é um array contendo vários outros arrays, tendo como chaves os nomes dos campos, pronto para uso em blocos @for@ e @foreach@, como qualquer outro array.
+
+pre. Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => admin,
+            [password] => spaghettiphp
+        )
+    [1] => Array
+        (
+            [id] => 2
+            [name] => root,
+            [password] => root
+        )
+    [2] => Array
+        (
+            [id] => 3
+            [name] => user
+            [password] => 123456
+        )
+)
+
+h3. @find(@ mixed $conditions, mixed $order, integer $recursion @)@
+
+|_. mixed $conditions | Array ou string contendo as condições para a busca |
+|_. mixed $order | Array ou string que define a ordenação dos registros |
+|_. integer $recursion | Número de recursões para tabelas relacionadas |
+
+O método @Model::find()@ funciona exatamente como @Model::findAll()@, exceto por retornar apenas o *primeiro* registro que obedeça � s condições passadas. A estrutura do array também é ligeiramente diferente, sendo unidimensional:
+
+pre. Array
+(
+    [id] => 1,
+    [username] => admin
+    [password] => spaghettiphp
+)
+
+h3. @findAllBy(@ string $field, string $value, mixed $conditions, mixed $order, string $limit, integer $recursion @)@
+
+|_. string $field | Campo a ser utilizado como condicional |
+|_. string $value | Valor usado como condição para o campo |
+|_. mixed $conditions | Array ou string contendo condições adicionais para a busca |
+|_. mixed $order | Array ou string que define a ordenação dos registros |
+|_. string $limit | Limite de registros a serem recuperados |
+|_. integer $recursion | Número de recursões para tabelas relacionadas |
+
+@Model::findAllBy()@ busca todos os registros em que @$field@ seja igual a @$value@, usando @$conditions@ como parâmetros adicionais. Seu retorno é idêntico a @Model::findAll()@. Esse método é útil quando se quer usar apenas um campo como condição para a busca:
+
+pre. $this->Users->findAllBy("level", "admin");
+
+Apesar do propósito da função ser a busca por apenas um campo, é possível adicionar outros campos como condições adicionais, tornando a busca um pouco mais específica:
+
+pre. $this->Users->findAllBy("level", "user", array("approved" => true));
+
+Também é possível utilizar um atalho para essa função, @Model::findAllBy<field>()@, onde @$field@ é definido no próprio nome da função, e suprimido da lista de argumentos. Assim, @$value@ se torna o primeiro argumento.
+
+pre. $this->Users->findAllByLevel("user", array("approved" => true));
+
+h3. @findBy(@ string $field, string $value, mixed $conditions, mixed $order, integer $recursion @)@
+
+|_. string $field | Campo a ser utilizado como condicional |
+|_. string $value | Valor usado como condição para o campo |
+|_. mixed $conditions | Array ou string contendo condições adicionais para a busca |
+|_. mixed $order | Array ou string que define a ordenação dos registros |
+|_. integer $recursion | Número de recursões para tabelas relacionadas |
+
+@Model::findBy()@ funciona como @Model::findAllBy()@, exceto por retornar apenas o *primeiro* item encontrado, em um array unidimensional.
+
+Assim como @Model::findAllBy()@, também aceita o atalho @Model::findAllBy<field>()@:
+
+pre. $this->Users->findAllById(1);
+
+h2. Salvando Registros
+
+h3. @save(@ array $data @)@
+
+|_. array $data | Dados a serem salvos |
+
+O salvamento de registros é sempre algo complicado. Primeiro é necessário saber se um registro existe, para depois podermos decidir se ele deve ser inserido ou se deve ser apenas atualizado. Com o Spaghetti*, você se preocupa apenas em enviar os dados, e o resto é trabalho do __framework__.
+
+Para que o Spaghetti* possa salvar corretamente os dados, o array @$data@ deve ser construído assim:
+
+pre. Array
+(
+    [id] => 1,
+    [username] => admin
+    [password] => spaghettiphp
+)
+
+Caso algum campo não seja passado, ele não será considerado na consulta SQL, ou seja, ele permanecerá intacto na tabela, caso exista. Se você passar algum campo inexistente, ele será completamente desconsiderado, então não é necessário se preocupar em limpar arrays vindos de formulários.
+
+Para que o modelo possa descobrir se o registro já existe na tabela, é necessário que seja passado o campo @id@. É realizada uma busca na tabela, e caso outro registro com mesma identificação já exista, ele é atualizado. Caso contrário, ele é criado. Tudo isso na mesma função, sem você precisar se preocupar.
+
+p(note). Quando estiver usando @Model::save()@ dentro de loops, não esqueça de usar @Model->create()@ para evitar que os dados sejam sobrescritos.
+
+h4. @created@ e @modified@
+
+Muitas vezes é necessário manter registro das datas de criação e modificação de um registro. Para que você não precise explicitamente definir valor para esses campos, o Spaghetti* faz isso para você.
+
+Para que esse comportamento seja usado, é necessário ter os campos @created@ ou @modied@ definidos como @DATETIME@ em sua tabela. O campo @created@ é definido apenas uma vez, na criação do registro, e somente caso não tenha um valor já definido em @$data@. Já o campo @modified@ é redefinido a cada salvamento do registro, também somente caso não esteja definido em @$data@.
+
+h4. Prevenção contra SQL Injection
+
+Também somos preocupados com segurança. Por isso, toda e qualquer string usada como valor é passada pelo método @Model::escape()@, escapando qualquer caracter que possa ser perigoso caso esteja em uma consulta SQL. E não se preocupe com @magic_quotes@, o modelo já faz a verificação e elimina barras quando necessário.
+
+Caso você precise fazer consultas de maneira manual, ou precise escapar qualquer string dentro da aplicação, basta usar essa mesma função.
+
+pre. $this->Users->escape("String 'potencialmente' perigosa");
+// Retorna "String \'potencialmente\' perigosa"
+
+h3. @saveAll(@ array $data @)@
+
+|_. array $data | Dados a serem salvos |
+
+Caso você precise salvar vários registros de uma só vez, o Spaghetti* lhe dá a opção do método @Model::saveAll()@. Ele dispõe de todas as funcionalidades de @Model::save()@, com exceção do parâmetro recebido. Esse parâmetro deve ser um array com a seguinte estrutura:
+
+pre. Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [name] => admin,
+            [password] => spaghettiphp
+        )
+    [1] => Array
+        (
+            [id] => 2
+            [name] => root,
+            [password] => root
+        )
+    [2] => Array
+        (
+            [id] => 3
+            [name] => user
+            [password] => 123456
+        )
+)
+
+h2. Apagando Registros
+
+h3. @delete(@ integer $id @)@
+
+|_. integer $id | ID do registro a ser apagado |
+
+@Model::delete()@ apaga apenas um registro com ID @$id@ da tabela. Como ele é limitado a apenas um registro, mesmo que existam vários IDs iguais, apenas o primeiro será apagado.
+
+h3. @deleteAll(@ mixed $conditions, mixed $order, integer $limit @)@
+
+|_. mixed $conditions | Array ou string contendo as condições para que um registro seja apagado |
+|_. mixed $order | Array ou string que define a ordenação dos registros a serem apagados |
+|_. integer $limit | Limite de registros apagados |
+
+@Model::deleteAll()@ faz a remoção de vários registros de uma única vez, apagando registros que obedeçam � s condições @$conditions@, ordenados por @$order@ e limitados por @$limit@.
+
+Esse método é útil quando é necessário apagar vários registros, que não obedeçam apenas a IDs, como usuários não aprovados ou mensagens de spam.
+
+pre. $this->Users->deleteAll(array("approved" => false));
+
+h2. __Joins__ ou relacionamentos
+
+O Spaghetti* suporta três tipos de relacionamentos, ou __joins__: um para um, um para muitos e muitos para um. "Saiba Mais":/docs/relacionamentos-entre-models.
+
+h2. Métodos Personalizados
+
+Os modelos de dados do Spaghetti* são poderosos o suficiente para prover todas as funcionalidades básicas que você precisa para desenvolver sua aplicação sem se preocupar com detalhes como escrever SQL. Entretanto, você pode precisar de um pouco mais.
+
+Não esqueça que as classes de modelo podem ser estendidas: basta você adicionar métodos e propriedades! Qualquer função repetitiva relacionada a banco de dados deve ser escrita aqui. Depois, você poderá usá-la em qualquer __controller__ que use esse modelo. DRY(Don't Repeat Yourself), tudo definido em um lugar só!
+
+pre. class Posts extends AppModel {
+    public function findLastPosts() {
+        return $this->findAll(array("created <" => "curdate()"), array("created" => "DESC"));
+    }
+}
+
+O método @Posts::findLastPost()@, depois de definido, pode ser utilizado normalmente dentro de um controller.
+
+pre. $this->Posts->findLastPosts();

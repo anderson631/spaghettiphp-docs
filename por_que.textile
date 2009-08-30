@@ -1,0 +1,18 @@
+p(highlight). O Spaghetti* não é apenas uma ferramenta. Fizemos mais que isso: incorporamos uma nova filosofia em nosso trabalho. Mais do que somente desenvolver aplicações, nos divertimos fazendo nosso trabalho. E o melhor: você também pode!
+
+Apesar do nome, nosso negócio não é enrolação. Uma aplicação pronta sempre será muito melhor do que duas no papel. O nosso objetivo é justamente agilizar seu fluxo de trabalho, fazendo mais em menos tempo, sem perder a graça de desenvolver.
+
+h2. Características do Spaghetti*
+
+O Spaghetti* não é apenas outro __framework__ MVC qualquer. Ao longo do desenvolvimento foram incorporadas características interessantes que podem ser muito úteis para você.
+
+
+Gratuito, __open source__
+Compatível com PHP 5, usando seu pleno potencial
+Instalação simples, descompacte e tudo funciona!
+Construído sob o paradigma de Programação Orientada a Objeto
+Separa as camadas de sua aplicação de acordo com o __design pattern__ MVC(Model-View-Controller)
+Geração de URLs amigáveis e customizáveis através de rotas e prefixos
+Facilita e estimula a adoção de boas práticas de desenvolvimento, como simplicidade, separação de código e DRY(Don't Repeat Yourself)
+Utilização de código PHP simples para geração de __views__, nada de linguagem de templates
+Facilidade na extensão de funcionalidades através de Componentes e __Helpers__

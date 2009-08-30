@@ -1,0 +1,43 @@
+p(highlight). __Helpers__ são classes semelhante aos "componentes":/components, porém são exclusivas para as __views__ e para a lógica presentacional compartilhada entre __views__, __layouts__ e __elements__. Nestas classes você encontra funções que tornam o seu desenvolvimento __client-side__ mais rápido e fácil.
+
+Dois __helpers__ vêm habilitados por padrão na instalação do Spaghetti*: um para  "HTML":/docs/html-helper e outro para "formulários":/docs/form-helper.
+
+h2. Utilizando os __helpers__
+
+Conforme dito acima, você só poderá usar as funções de um __helper__ dentro de uma __view__, __layout__ ou __element__. Para mais informações sobre como utilizar cada __helper__, consulte as documentações específicas ao lado.
+
+h2. Criando seu próprio __helper__
+
+Para criar um __helper__, crie um arquivo @nome_do_helper_helper.php@ na pasta @app/helpers/@. Por exemplo, se fôssemos criar um __helper__ chamado Number, ele seria o arquivo @app/helpers/number_helper.php@, e dentro dele haveria a classe @NumberHelper@ que estende a classe @Helper@.
+
+p(note). Como os __helpers__ são específicos para as __views__, você não conseguirá ter acesso a modelos de dados de dentro deles.
+
+h3. Carregando um __helper__
+
+Você precisa então chamar este __helper__ no __controller__ onde você pretende usá-lo. Caso queira usar um __helper__ com toda a aplicação, carregue-o dentro do AppController, localizado em @app/controllers/app_controller.php@, adicionando a seguinte variável de instância �  classe:
+
+pre. public $helpers = array("Number");
+
+Continuando no exemplo, neste caso carregaríamos no __controller__ o __helper__ Number. Porém é importante ressaltar que, definindo o __array__ com apenas Number, os outro __helpers__ embutidos no Spaghetti* não serão mais carregados, pois você está sobrescrendo a chamada padrão. Para continuar a carregar os __helpers__ padrão do Spaghetti, adicione a variável de classe desta maneira:
+
+pre. public $helpers  = array("Html", "Form", "Number");
+
+Agora seu __helper__ já está pronto para ser usado nas __views__ do seu __controller__ (ou da aplicação inteira, caso tenha incluído o __helper__ no AppController).
+
+h3. Usando o __helper__ na __view__
+
+Se o seu __helper__ se chamar Number, logo ele estará acessível em uma __view__ através da variável @$number@, como no exemplo abaixo:
+
+pre. <h1>My Blog</h1>
+<?php echo $number->ceil(2.0324); ?>
+
+A chamada acima procurará pelo __helper__ Number e pelo seu método @ceil()@, que pode ser escrito assim:
+
+pre. <?php class NumberHelper extends Helper {
+     public function ceil($number = null) {
+          $numeroArredondado = ceil($number);
+          $this->output($numeroArredondado);
+     }
+} ?>
+
+Repare que para passar a saída da função você utiliza o método @$this->output()@ passando como parâmetro o conteúdo que você deseja retornar.

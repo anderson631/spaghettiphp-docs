@@ -1,14 +1,14 @@
 {
     "por_que": "Por que o Spaghetti*?",
-    "introducao_sobre_mvc": "Introdução sobre MVC",
-    "configurando_sua_aplicacao": {
+    "mvc": "Introdução sobre MVC",
+    "configuracao": {
         "index": "Configuração",
         "rotas": "Rotas"
     },
     "models": {
         "index": "Models",
-        "relacionamentos_entre_models": "Relacionamentos",
-        "condicoes_complexas": "Condições Complexas"
+        "relacionamentos": "Relacionamentos",
+        "condicoes": "Condições Complexas"
     },
     "controllers": "Controllers",
     "views": {

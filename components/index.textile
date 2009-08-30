@@ -1,0 +1,35 @@
+p(highlight). Você já viu essa história antes: você começa um projeto, programa uma solução, começa um novo projeto, programa novamente a mesma solução. Components são extensões auto-suficientes, <em>plug and play</em>, para que você não se incomode mais com tarefas repetitivas.
+
+Os exemplos mais clássicos incluem envio de e-mails, __upload__ de arquivos e autenticação de usuários. Estamos sempre desenvolvendo "novos componentes":/components para nossos próprios problemas, e então compartilhamos eles aqui.
+
+h2. Instalando um componente
+
+Não há segredos quanto a instalação de um novo componente em sua aplicação. Quando você baixa um componente, extraia o arquivo ZIP e copie o arquivo PHP para a pasta @app/components/@. E é isso. Já está instalado.
+
+Um componente, entretanto, embora esteja instalado não é ativado por padrão. Isso quer dizer que você precisa informar quando deseja usar um componente dentro de um controlador. Para tal, adicione a variável de instância em seu __controller__ conforme o exemplo abaixo:
+
+pre. public $components = array("NomeDoComponente");
+
+Você pode ainda carregar vários componentes dentro de um __controller__ passando vários itens dentro do __array__:
+
+pre. public $components = array("NomeDoComponente1","Nome do Componente2");
+
+h2. Utilizando o componente
+
+Vamos supor que você tenha carregado um componente chamado Upload em seu controlador @Fotos@. Para que você tenha acesso � s funcionalidades dentro do __controller__ Fotos, a instância do objeto Upload fica gravada em @$this->UploadComponent@.
+
+Por exemplo, caso você precise utilizar o método @upload()@ deste componente, você o faria dentro de uma __action__ da seguinte maneira:
+
+pre. $this->UploadComponent->upload()
+
+p(note). *Nota:* Lembre-se sempre que cada componente possui seus próprios métodos e próprio funcionamento. O exemplo acima meramente ilustra como carregar, instanciar e utilizar os métodos de um componente.
+
+h2. Escrevendo seus próprios componentes
+
+Um componente basicamente é composto por uma classe, chamada de @NomeDoComponenteComponent@, que estende a classe @Component@. O arquivo deve ser chamado, neste exemplo, @nome_do_componente_component.php@, e deve estar na pasta de componentes da sua aplicação em @app/components/@.
+
+Um objeto da classe do seu componente será instanciado automaticamente sempre que um __controller__ solicitar. Por tanto, pelo fato de se tratar de um processo automático, não há como passar parâmetros para o construtor de sua classe. Isso significa que, se você precisar atribuir valores � s variáveis de instância, deve fazê-lo dentro do controlador, conforme o exemplo:
+
+pre. $person = $this->PersonComponent;
+$person->name = "Roberto";
+$person->age = 32;

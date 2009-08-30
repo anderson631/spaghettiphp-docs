@@ -1,0 +1,217 @@
+p(highlight). O __helper__ HTML agiliza a criação de alguns dos elementos que mais tomam tempo, como os chamados para CSS(Folhas de Estilo em Cascata) e JavaScript, criação de links @a@ e inserção de imagens @img@.
+
+O __helper__ HTML vem carregado por padrão na sua aplicação Spaghetti*, e portanto é acessível de qualquer __view__ utilizando a variável @$html@.
+
+h2. Índice
+
+==
+<ul class="index">
+<li><a href="#link">Inserindo links para outras páginas</a>
+	<ul>
+	<li><a href="#link-external">Criando links para páginas externas</a></li>
+	<li><a href="#link-attributes">Passando atributos para o elemento <code>a</code></a></li>
+	<li><a href="#link-images">Criando links em imagens</a></li>
+	<li><a href="#link-full">Criando links com URLs completas</a></li>
+	</ul>
+</li>
+<li><a href="#image">Inserindo imagens em sua página</a>
+	<ul>
+	<li><a href="#image-external">Inserindo imagens hospedadas externamente</a></li>
+	<li><a href="#image-attributes">Passando mais atributos para a imagem</a></li>
+	</ul>
+</li>
+<li><a href="#stylesheet">Insira CSS em sua página</a>
+	<ul>
+	<li><a href="#stylesheet-external">Incluindo estilos hospedados em um servidor externo</a></li>
+	<li><a href="#stylesheet-multiple">Inserindo múltiplos estilos de uma vez</a></li>
+	<li><a href="#stylesheet-attributes">Passando atributos para a tag <code>style</code></a></li>
+	<li><a href="#stylesheet-full">Chamando folhas de estilo com URLS completas</a></li>
+	</ul>
+</li>
+<li><a href="#javascript">Inserindo arquivos JavaScript na página</a>
+	<ul>
+	<li><a href="#javascript-external">Incluindo arquivos de script hospedados em um servidor externo</a></li>
+	<li><a href="#javascript-multiple">Inserindo múltiplos arquivos JavaScript de uma vez</a></li>
+	<li><a href="#javascript-attributes">Passando atributos para a tag <code>script</code></a></li>
+	<li><a href="#javascript-full">Chamando arquivos de script com URLS completas</a></li>
+	</ul>
+</li>
+</ul>
+==
+
+h2(#link). Inserindo links para outras páginas
+
+h3. @$html->link(@ string $value, string $url, array $attributes @)@
+
+|_. string $value | String contendo o conteúdo do link |
+|_. string $url | String contendo a URL(Universal Resource Locator) do link |
+|_. array $attributes | Array contendo atributos do elemento @a@ |
+
+Para gerar links internos basta escrever a URL(Universal Resource Locator) iniciando pela barra (/), passando esta URL(Universal Resource Locator) normalmente como segundo parâmetro do método @$html->link()@. O __helper__ gerará o endereço completo para você.
+
+pre. <?php echo $html->link("Adicionar Recado", "/recados/adicionar"); ?>
+// Gerará o seguinte:
+// <a href="/recados/adicionar">Recados</a>
+
+h4(#link-external). Criando links para páginas externas
+
+Para gerar links externos basta escrever a URL(Universal Resource Locator) normalmente como segundo parâmetro do método @$html->link()@:
+
+pre. <?php echo $html->link("Google", "http://www.google.com.br"); ?>
+// Gerará o seguinte:
+// <a href="http://www.google.com.br">Google</a>
+
+h4(#link-attributes). Passando atributos para o elemento @a@
+
+Você pode definir todos os atributos disponíveis passando-os como itens de __array__ no terceiro parâmetro do método @$html->link()@:
+
+pre. <?php echo $html->link("Google", "http://www.google.com.br", array("class"=>"google-link")); ?>
+// Gerará o seguinte:
+// <a href="http://www.google.com.br" class="google-link">Google</a>
+
+h4(#link-image). Criando links em imagens
+
+Além disso, se quiser gerar um link em uma imagem, pode também utilizar o método @$html->image()@ do __helper__ HTML para gerar a __tag__ @img@, conforme o exemplo abaixo:
+
+pre. <?php echo $html->link( $html->image("botao_adicionar.gif", "Adicionar Recado") , "/recados/adicionar"); ?>
+// Gerará o seguinte:
+// <a href="/recados/adicionar"><img src=/images/botao_adicionar.gif" alt="Adicionar Recado" /></a>
+
+h4(#link-full). Criando links com URLs completas
+
+Por fim, caso precise gerar URL's completas em seus links, defina o quarto parâmetro do método @$html->link()@ como @true@.
+
+pre. <?php echo $html->link("Apagar Página", "/paginas/apagar" array(), true); ?>
+// Gerará o seguinte: 
+// <a href="http://suaapp.com/pagina/apagar">Apagar Página</a>
+
+h2(#image). Inserindo imagens na sua página
+
+h3. @$html->image(@ string $url, string $alt, array $attributes @)@
+
+|_. string $url | String contendo a URL(Universal Resource Locator) da imagem |
+|_. string $alt | String contendo o texto do atributo @alt@ (conteúdo alternativo) da imagem  |
+|_. array $attributes | Array contendo atributos do elemento @img@ |
+
+O exemplo abaixo mostra como inserir uma imagem no documento HTML.
+
+pre. <?php echo $html->image("natal/foto01.jpg", "Foto de Natal"); ?>
+// Gerará o seguinte:
+// <img src="http://www.suaaplicacao.com/images/natal/foto01.jpg" alt="Foto de Natal" />
+
+p(note). *Nota:* O diretório base das imagens é @app/webroot/images/@. Por exemplo, se a imagem @logo.gif@ estiver logo na raiz da pasta @app/webroot/images/@, você deve passar como URL da imagem apenas @logo.gif@, pois o __helper__ se encarregará de completar o endereço automaticamente.
+
+h4(#image-external). Inserindo imagens hospedadas externamente
+
+Para inserir imagens hospedadas em endereços externos, tudo o que você precisa fazer é informar a URL completa da imagem, como mostra o exemplo abaixo.
+
+pre. <?php echo $html->image("http://google.com/coruja.gif", "Coruja"); ?>
+// Gerará o seguinte:
+// <img src="http://google.com/coruja.gif" alt="Coruja" />
+
+h4(#image-attributes). Passando mais atributos para a imagem
+
+Se precisar inserir mais atributos HTML em sua imagem, passe como terceiro parâmetro do método @$html->image()@ um __array__ contendo os atributos desejados, como no exemplo abaixo.
+
+pre. <?php echo $html->image("/papagaio.gif", "Papagaio", array("class"=>"foto")); ?>
+// Gerará o seguinte:
+// <img src="/images/papagaio.gif" alt="Papagaio" class="foto" />
+
+h2(#stylesheet). Insira CSS(Folhas de Estilo em Cascata) em sua página
+
+h3. @$html->stylesheet(@ mixed $url, array $attributes, boolean $full @)@
+
+|_. mixed $url | String contendo a URL(Universal Resource Locator) do arquivo CSS ou Array, caso sejam várias folhas de estilo |
+|_. array $attributes | Array contendo atributos do elemento @style@ |
+|_. boolean $full | Se @true@, passa a URL inteira como atributo @href@ |
+
+O seguinte exemplo gerará um elemento @style@ chamando um arquivo CSS.
+
+pre. <?php echo $html->stylesheet("default.css"); ?>
+// Gerará o seguinte: 
+// <link href="/styles/default.css" rel="stylesheet" type="text/css" />
+
+p(note). *Nota:* O diretório base dos arquivos CSS é @app/webroot/styles/@, então quando você utilizar o __helper__ HTML para incluir seus arquivos CSS, a URL da folha de estilos deve ser relativa �  este diretório.
+
+h4(#stylesheet-external). Inserindo estilos hospedados em um servidor externo
+
+Para incluir um CSS hospedado em outro servidor, apenas informe a URL completa, como no exemplo que segue:
+
+pre. <?php echo $html->stylesheet("http://www.google.com/default.css"); ?>
+// Gerará o seguinte: 
+// <link href="http://www.google.com/default.css" rel="stylesheet" type="text/css" />
+
+h4(#stylesheet-multiple). Inserindo múltiplos estilos de uma vez
+
+Seguindo os princípios de DRY(Don't Repeat Yourself), passar uma nova instrução nova para cada folha de estilo a ser inserida é desperdício de tempo. Por isso, se você precisar incluir várias folhas de estilo, pode passar um __array__ de URLs como primeiro parâmetro do método @$html->stylesheet()@, como no exemplo abaixo:
+
+pre. <?php echo $html->stylesheet(array("default.css","home.css","form.css")); ?>
+// Gerará o seguinte: 
+// <link href="/styles/default.css" rel="stylesheet" type="text/css" />
+// <link href="/styles/home.css" rel="stylesheet" type="text/css" />
+// <link href="/styles/form.css" rel="stylesheet" type="text/css" />
+
+h4(#stylesheet-attributes). Passando atributos para a __tag__ @style@
+
+Se você precisar passar parâmetros para a __tag__ @style@, pode fazê-lo passando um __array__ de argumentos como segundo parâmetro do método @$html->stylesheet()@, seguindo o exemplo abaixo:
+
+pre. <?php echo $html->stylesheet("default.css", array("media"=>"handheld")); ?>
+// Gerará o seguinte: 
+// <link href="/styles/default.css" rel="stylesheet" type="text/css" media="handheld" />
+
+h4(#stylesheet-full). Chamando folhas de estilo com URLs completas
+
+Por fim, caso precise gerar URL's completas em suas tags @style@, defina o terceiro parâmetro do método @$html->stylesheet()@ como @true@.
+
+pre. <?php echo $html->stylesheet("default.css", array(), true); ?>
+// Gerará o seguinte: 
+// <link href="http://suaapp.com/styles/default.css" rel="stylesheet" type="text/css" />
+
+h2(#javascript). Inserindo arquivos JavaScript na página
+
+h3. @$html->script(@ mixed $src, array $attributes, array $full @)@
+
+|_. mixed $url | String contendo a URL(Universal Resource Locator) do arquivo Javascript ou Array, caso sejam vários arquivos |
+|_. array $attributes | Array contendo atributos do elemento @script@ |
+|_. boolean $full | Se @true@, passa a URL inteira como atributo @src@ |
+
+O seguinte trecho de código gerará um elemento @script@ chamando um arquivo @.js@.
+
+pre. <?php echo $html->script("default.js"); ?>
+// Gerará o seguinte: 
+// <script src="/scripts/default.js" type="text/javascript"></script>
+
+p(note). *Nota:* O diretório base dos arquivos JavaScript é @app/webroot/scripts/@, então quando você utilizar o __helper__ HTML para incluir seus arquivos JavaScript, a URL do arquivo deve ser relativa �  este diretório.
+
+h4(#javascript-external). Inserindo arquivos de script hospedados em um servidor externo
+
+Para incluir um arquivo JavaScript hospedado em outro servidor, apenas informe a URL completa, como no exemplo que segue:
+
+pre. <?php echo $html->script("http://www.google.com/default.js"); ?>
+// Gerará o seguinte: 
+// <script src="http://www.google.com/default.js" type="text/javascript"></script>
+
+h4(#javascript-multiple). Inserindo múltiplos arquivos JavaScript de uma vez
+
+Seguindo os princípios de DRY(Don't Repeat Yourself), passar uma nova instrução nova para cada arquivo de script a ser inserido é desperdício de tempo. Por isso, se você precisar incluir vários arquivosp, pode passar um __array__ de URLs como primeiro parâmetro do método @$html->script()@, como no exemplo abaixo:
+
+pre. <?php echo $html->script(array("default.js","jquery.js")); ?>
+// Gerará o seguinte: 
+// <script src="/scripts/default.js" type="text/javascript"></script>
+// <script src="/scripts/jquery.js" type="text/javascript"></script>
+
+h4(#javascript-attributes). Passando atributos para a __tag__ @script@
+
+Se você precisar passar parâmetros para a __tag__ @script@, pode fazê-lo passando um __array__ de argumentos como segundo parâmetro do método @$html->script()@, seguindo o exemplo abaixo:
+
+pre. <?php echo $html->script("default.js", array("defer"=>"defer")); ?>
+// Gerará o seguinte: 
+// <script src="/scripts/default.js" type="text/javascript" defer="defer"></script>
+
+h4(#javascript-full). Chamando arquivos de script com URLs completas
+
+Por fim, caso precise gerar URL's completas em suas tags @script@, defina o terceiro parâmetro do método @$html->script()@ como @true@.
+
+pre. <?php echo $html->script("default.js", array(), true); ?>
+// Gerará o seguinte: 
+// <script src="http://suaapp.com/scripts/default.js" type="text/javascript" />

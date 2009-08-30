@@ -1,0 +1,47 @@
+p(highlight). URLs complicadas, sem sentido ou apenas longas demais são um problema comum. Entretanto, com as rotas do Spaghetti* a solução é simples e rápida, e você nem mesmo precisará escrever mais do que algumas linhas!
+
+Nem sempre a estrutura padrão @controller/action/id@ é a melhor ou mais indicada para sua aplicação. Embora faça sentido, você pode precisar fazer suas próprias modificações nessa estrutura. Esse é o propósito do arquivo @app/config/routes.php@.
+
+h2. Rotas Padrão
+
+Quando você abrir o arquivo de configuração de rotas, você já encontrará uma chamada ao método @Mapper::connect()@, definindo a rota padrão de sua aplicação.
+
+pre. Mapper::connect("/", "/home");
+
+A rota acima vinculará a raiz de sua aplicação com o @HomeController@. Essa rota pode apontar para qualquer outro __controller__ de sua aplicação, mas ela é necessária pois o Spaghetti* precisa saber como proceder quando nenhum __controller__ é especificado na URL. Caso contrário, será chamada a class @Controller@, que é apenas uma classe base, e não um __controller__ propriamente dito.
+
+h2. Definindo novas rotas
+
+A definição de novas rotas modificará a resposta de sua aplicação de acordo com a URL acessada. As rotas devem ser definidas no mesmo arquivo @app/config/routes.php@, pois ele é chamado antes de qualquer processamento do Spaghetti*.
+
+Para conectar novas rotas a determinadas URLs, utilizamos o método @Mapper::connect()@, que deve receber dois parâmetros: o padrão a ser comparado e a rota que esse padrão deve seguir. Ou seja, o padrão será a URL acessada, e a rota será o caminho que essa URL terá. Com a rota abaixo, por exemplo, a URL @/posts/definindo-novas-rotas@ aponta para @/posts/view/definindo-novas-rotas@:
+
+pre. Mapper::connect("/posts/:any", "/posts/view/$1");
+
+O Mapper::connect tem suporte a expressões regulares, tornando a comparação ainda mais poderosa. Entretando, para evitar que você tenha que escrever expressões, o Spaghetti* já possui algumas strings "mágicas" para os casos mais comuns:
+
+@:any@ corresponde a qualquer caracter, incluindo barras
+@:num@ corresponde a qualquer número, mas não inclui barras
+@:part@ corresponde a qualquer caracter, seja ele dígito ou número, mas não considera barras
+
+Para recuperar essas ocorrências depois, usamos a mesma sintaxe usada em expressões regulares: @$1@ retorna a primeira ocorrência, @$2@ retorna a segunda ocorrência, e assim sucessivamente.
+
+p(note). **Nota**: para que expressões regulares sejam retornadas depois, é necessário que estejam entre parênteses.
+
+h2. Definindo prefixos
+
+Várias aplicações necessitam de áreas distintas dentro de sua estrutura. Mais do que apenas __controllers__ diferentes, � s vezes se torna necessário realizar as mesmas ações, mas por usuários com permissões diferentes. Isso acontece quando é necessária uma seção para administração, por exemplo.
+
+Para esse tipo de necessidade, o Spaghetti* conta com prefixos, através do método @Mapper::prefix()@@:
+
+pre. Mapper::prefix("admin");
+
+Quando um prefixo é definido, o Spaghetti* passa a chamar __actions__ diferentes. Quando a URL @/admin/users@ for chamada, será chamada a __action__ @admin_index@ de @UsersController@, em vez de apenas @index@. Com essas ações distintas, é possível manter níveis de permissão, além da possibilidade de alterar o comportamento de cada ação.
+
+p(note). **Nota**: prefixos também estão sujeitos a ação de rotas, ou seja, uma rota pode redirecionar um prefixo e causar problemas em sua aplicação.
+
+Caso você queira definir vários prefixos, também é possível fazê-lo com apenas uma chamada ao método, passando vários argumentos:
+
+pre. Mapper::prefix("admin", "user");
+
+Através da criação de múltiplos prefixos você pode segmentar sua aplicação, criando várias áreas distintas, com uma estrutura flexível e bem definida.

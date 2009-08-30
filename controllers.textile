@@ -1,0 +1,165 @@
+p(highlight). É nos __controllers__ onde tudo acontece. Aqui você começa a programar de verdade, e a usar de todo o poder do Spaghetti*.
+
+Os __controllers__ trabalham com toda a lógica da aplicação. Tarefas como o processamento de dados vindos do usuário, a busca de registros no banco de dados através dos __models__ e a passagem dos dados para as __views__.
+
+Geralmente, __controllers__ são associados a um único modelo. Para facilitar seu trabalho, o Spaghetti* já associa por padrão seu __controller__ com um __model__ de mesmo nome, sem necessitar de nenhuma configuração.
+
+h2. Criando __Controllers__
+
+Para criarmos um controller, é preciso definir a classe @<nome>Controller@, e salvá-la em @app/controllers/<nome>_controller.php@. Também é necessário estender a classe @AppController@, para que todos os métodos necessários sejam herdados, e sua aplicação funcione corretamente.
+
+pre. class PostsController extends AppController { }
+
+A partir de agora, a URL @/posts@ já está disponível, embora retorne um erro dizendo que a @action@ ainda não existe. Precisamos resolver isso!
+
+h2. Criando __Actions__
+
+__Actions__ nada mais são do que métodos dentro de uma classe de __controller__. Cada __action__ corresponde a uma ação diferente de sua aplicação. Ações podem ser o envio de um e-mail, o cadastro de um usuário, a postagem de um artigo, entre qualquer outra coisa.
+
+Para que sua aplicação funcione, é necessária a criação de __actions__ e suas respectivas __views__. Vamos criar uma __action__ simples, para gerar uma lista de posts:
+
+pre. class PostsController extends AppController {
+    public function index() {
+        $this->set("posts", $this->Posts->findAll());
+    }
+}
+
+A primeira coisa que devemos saber para podermos interagir entre __controllers__ e __views__ é como se faz a passagem de variáveis. Para isso, usa-se o método @Controller::set@, passando como parâmetros o nome da variável e seu respectivo valor. Dentro da __view__, essa variável estará disponível como uma variável local comum, acessível por @$posts@, no nosso caso.
+
+Você também pode notar que o modelo de dados já está disponível em @$this->Posts@. Através desse objeto, é possível acessar todas as propriedades do __model__ @Posts@ (que já deve existir em @app/models/posts.php@).
+
+A partir de agora, se a __view__ já tiver sido criada em @app/views/posts/index.phtm@, você já poderá ver o resultado em @/posts@. Como nenhuma __action__ é passada pela URL, o Spaghetti* supõe que esta seja @index@. Qualquer outra __action__ pode ser acessada através da estrutura @/controller/action@.
+
+h2. Recebendo parâmetros
+
+Diferente de páginas PHP comuns, os parâmetros no Spaghetti* não são passados através de __query strings__, como @?id=1&page=2@. Eles são passados como parte da URL, com cada parâmetro gerando uma URL diferente. O parâmetro mais usado é um número de identificação de um registro, para que ele possa ser identificado no banco de dados. Quando esse ID é passado como terceira parte da URL, ele já é identificado e enviado para o __controller__.
+
+Para que uma __action__ possa receber parâmetros, é necessário definí-los na função. Em uma ação de visualização de posts, pode-se fazer assim:
+
+pre. public function view($id = null) {
+    $this->set("post", $this->Posts->findById($id));
+}
+
+É recomendável que todo parâmetro tenha um valor padrão. Caso contrário, se esse parâmetro não for passado, o PHP disparará um erro, quebrando sua aplicação.
+
+Além do ID, é possível passar qualquer outro parâmetro, bastando adicionar mais partes na URL. Esse parâmetros são passados sequencialmente para a __action__. Para receber os parâmetro passados pela URL @/posts/view/1/hello-world@, nossa __action__ precisaria mudar para:
+
+pre. public function view($id = null, $slug = "") {
+    $this->set("post", $this->Posts->find(array("id" => $id, "slug" => $slug)));
+}
+
+p(note). **Nota**: mesmo quando não estiver presente na URL, o ID é passado como um valor nulo para a __action__. Caso você esteja usando parâmetros textuais, é necessário definir o primeiro parâmetro mesmo assim.
+
+h2. Recebendo Dados do Usuário
+
+Além de receber parâmetros como ID, também é necessário receber os dados enviados pelo usuário através do método POST. Assim que o usuário envia uma requisição a partir de um formulário, todos os dados de @$_POST@ ficam disponíveis através da variável @Controller::data@.
+
+Quando esses dados são recebidos, eles já estão prontos para serem usados em qualquer consulta @Model::save()@, bastando passá-los como parâmetro.
+
+pre. public function add() {
+    if(!empty($this->data)):
+        $this->Posts->save($this->data);
+    endif;
+}
+
+E lembre-se: a menos que seja definido um campo de nome @id@, o ID passado como parâmetro na URL não é passado para @Controller::data@, sendo necessário definí-lo manualmente.
+
+pre. public funcion edit($id = null) {
+    if(!empty($this->data)):
+        $this->data["id"] = $id;
+        $this->Posts->save($this->data);
+    endif;
+}
+
+h2. Modelos, __Helpers__ e Componentes
+
+Por padrão, o Spaghetti* já vincula seu __controller__ com um modelo de mesmo nome. Entretanto, você pode precisar usar um modelo diferente em determinados __controllers__, ou mesmo usar vários modelos dentro de um mesmo __controller__. Para isso, o Spaghetti* usa a variável @uses@.
+
+pre. class UsersController extends AppController {
+    public $uses = array("Users", "Profiles");
+}
+
+p(note). **Nota**: Não é necessário incluir modelos relacionados caso eles não sejam usados diretamente, o Spaghetti* já se encarrega disso!
+
+Caso você não deseje utilizar modelo algum em seu __controller__, basta definir essa variável como um array vazio:
+
+pre. class UsersController extends AppController {
+    public $uses = array();
+}
+
+Os componentes e __helpers__ desejados também devem ser incluídos no __controller__, através de suas respectivas variáveis @components@ e @helpers@, assim como na definição de modelos.
+
+pre. class UsersController extends AppController {
+    public $uses = array("Users", "Profiles");
+    public $components = array("Auth");
+    public $helpers = array("Html", "Form", "Date");
+}
+
+A menos que você deseje incluir outros __helpers__, não é necessário definir @Html@ e @Form@, já que eles são herdados de @AppController@.
+
+h2. Usando Layouts
+
+Fazendo o uso de "layouts":/docs/layouts, você economiza código HTML, gerando todo o esqueleto da página apenas uma vez. Por padrão, o Spaghetti* renderiza o layout @default@, que se encontra em @app/layouts/default.phtm@. Entretanto, é possível escolher qualquer outro layout disponível em sua aplicação através da variável @layout@.
+
+pre. class HomeController extends AppController {
+    public $layout = "home";
+}
+
+Muitas vezes um layout não é necessário, e você deseja que o Spaghetti* não renderize nenhum. Nesse caso, é possível definir o valor da variável como @false@ e pronto!
+
+Também usado geralmente nos layouts, o título da página também pode ser definido pelo __controller__. Para tal, define-se a variável @pageTitle@, com um texto qualquer que você queira ver no título.
+
+pre. class HomeController extends AppController {
+    public $pageTitle = "Minha Aplicação com Spaghetti*";
+}
+
+Essa variável também é recebida como uma variável local, tanto em __views__ quanto em layouts. Você pode imprimí-la onde desejar, seja na tag @<title>@, em tags @<h1>@, ou onde mais se fizer necessário.
+
+h2. Redirecionamentos
+
+Após uma ação, geralmente após editar ou apagar algum registro, geralmente acontece um redirecionamento da aplicação. Os __controllers__ do Spaghetti* já herdam o método @Controller::redirect()@ para esse propósito. Basta definir a URL para a qual se deseja redirecionar.
+
+pre. $this->redirect("/home");
+
+Como o redirecionamento é feito através de um __header__ HTTP, também é possível adicionar mais um __header__ indicando o status da requisição. Basta passar como segundo parâmetro o número do status, e o Spaghetti* se encarrega de definir o __header__ apropriado:
+
+pre. $this->redirect("/home", 404); // gerando um erro 404 - página não encontrada
+
+Além de redirecionamentos HTTP, o Spaghetti* também suporta que você redirecione uma ação para outra do mesmo __controller__. Isso é feito através do método @Controller::setAction()@, passando o nome da ação como parâmetro. Qualquer outro parâmetro será passado diretamente para a __action__ definida.
+
+Esse método é bastante útil para evitar a criação de várias __views__ para ações semelhantes, como adicionar e editar registros, por exemplo.
+
+pre. public function add() {
+    $this->setAction("edit");
+}
+public function edit($id = null) {
+    if(!empty($this->data)):
+        $this->data["id"] = $id;
+        $this->Posts->save($this->data);
+    endif;
+}
+
+h2. Callbacks
+
+Os callbacks são funções executadas em determinados momentos da execução do Spaghetti*, como antes da execução de uma ação do __controller__ ou antes da renderização de uma __view__.
+
+|_. Callback |_. Momento da execução |
+| beforeFilter | Antes da execução da __action__ |
+| beforeRender | Depois da execução da __action__, mas antes da renderização da __view__ |
+| afterFilter | Após execução da __action__ e renderização da __view__ |
+
+Esse callbacks podem ser usados para executar qualquer coisa que você precise para seus __controllers__. Para definí-los, basta criar sua função correspondente na classe de __controller__.
+
+pre. class HomeController extends AppController {
+    public function beforeFilter() {
+		$this->AuthComponent->check();
+	}
+}
+
+h2. AppController
+
+@AppController@ é o __controller__ base para todos os outros __controllers__ na aplicação. Isso significa que todo e qualquer método ou atributo que for definido dentro dessa classe estará disponível para todos os outros __controllers__ da aplicação.
+
+O uso dessa herança é muito útil no uso de callbacks, quando é necessário que eles sejam executados em todas as partes da aplicação. O componente @AuthComponent@, por exemplo requer que o método @check@ seja executado em todas as partes da aplicação.
+
+Por padrão, o Spaghetti* usa o @AppController@ da biblioteca padrão. Entretanto, você pode criar o arquivo @app/controllers/app_controller.php@, e então o Spaghetti* passará a usá-lo para estender todos os outros __controllers__ de sua aplicação.

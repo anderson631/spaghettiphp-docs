@@ -1,0 +1,21 @@
+p(highlight). O Spaghetti* foi construído baseando-se no __design pattern__ MVC(Model-View-Controller), separando as camadas da sua aplicação, tornando o desenvolvimento e manutenção muito mais fáceis e rápidos. Na prática, toda a camada de lógica e dados fica separada da camada de apresentação de sua aplicação, mantendo seu código PHP longe do código HTML, fazendo com que designers e programadores possam trabalhar simultaneamente de maneira harmoniosa e eficiente.
+
+h2. Modelos de Dados
+
+Os modelos de dados, ou __Models__, representam os dados de sua aplicação. Embora os dados geralmente venham de bancos de dados como MySQL, SQL Server e similares, eles podem ser basicamente __qualquer__ coisa, desde arquivos de texto até documentos em XML. O limite é a sua criatividade.
+
+As classes do Spaghetti* irão auxiliá-lo na manipulação de seus dados, sem que você precise escrever uma única linha de SQL. O Spaghetti* faz o trabalho sujo, enquanto você se preocupa com o que realmente interessa.
+
+No momento, os modelos de dados do Spaghetti* funcionam apenas com MySQL, embora o suporte a outros bancos de dados já esteja previsto para a próxima versão. Isso também significa que, se não existir um __driver__ para o banco de dados que você usa, você mesmo poderá criá-lo e compartilhar com a comunidade do Spaghetti*.
+
+h2. Controladores
+
+É nos __Controllers__ que a mágica realmente acontece. É aqui onde você irá tratar as respostas do usuário, buscar e processar dados e retorná-los para as __Views__. Nada de código HTML, nada de CSS, nada de JavaScript. Única e puramente código PHP.
+
+Mesmo você estando no comando, o Spaghetti* irá lhe auxiliar dando acesso aos seus __Models__ e facilitando o envio de dados para as __Views__. Você se diverte programando, e o Spaghetti* o ajuda com o resto.
+
+h2. Visualizações
+
+As __Views__ fazem parte da camada de apresentação de sua aplicação. Nessa camada você se preocupa unicamente em mostrar os dados ao usuário, usando apenas algumas estruturas básicas em PHP, evitando aquela típica mistura de lógica e apresentação em um mesmo arquivo. Além disso, também é possível usar comandos para a criação fácil de links, imagens e formulários, sem que você precise se preocupar com detalhes chatos de implementação.
+
+Escolhemos o MVC por ser um __pattern__ que faz bastante sentido no desenvolvimento Web, além de aumentar a produtividade, diminuir a repetição de código, facilitar a correção de bugs e tornar a vida dos desenvolvedores um pouco mais divertida. E você, está pronto para entrar brincadeira, e se unir a nós por um desenvolvimento melhor?
