@@ -5,11 +5,11 @@ h2. Modelos
 A principal  modificação na classe @Model@ foi a extinção dos métodos @Model::find()@ e @Model::findAll()@, em favor de seus novos substitutos @Model::first()@ e @Model::all()@. A passagem de parâmetros para esses métodos também foi redefinida para receber _arrays_ em vez de uma sequência de vários parâmetros.
 
 pre. $this->Model->all(array(
-	"conditions" => array(),
-	"order" => "id ASC",
-	"limit" => "1,10",
-	"fields" => array(),
-	"recursion" => -1
+    "conditions" => array(),
+    "order" => "id ASC",
+    "limit" => "1,10",
+    "fields" => array(),
+    "recursion" => -1
 ));
 
 Outra grande modificação feita em @Model@ foi a remoção dos métodos relativos ao MySQL, sendo todos eles transportados para uma classe @MysqlDatasource@. Além de facilitar a manutenção e alteração de ambas as classes, isso permitirá que o suporte a novos bancos de dados sejam facilmente adicionados no futuro, bastando criar uma nova classe @Datasource@ e modificar as configurações necessárias.
@@ -38,4 +38,40 @@ h2. _Helpers_
 
 A classe @Helper@ permanece inalterada, mas temos algumas alterações envolvendo os _helpers_ providos com o Spaghetti*. Em @HtmlHelper@, além da correção de vários bugs, foi adicionado o parâmetro @$inline@ em @HtmlHelper::script()@ e @HtmlHelper::style()@, permitindo que a inclusão de _scripts_ e folhas de estilo possa ser feita com @View::scriptsForLayout@ e @View::stylesForLayout@, respectivamente. Ambos métodos também podem chamar os respectivos arquivos sem necessidade de definir a extensão, e vários arquivos podem ser passados na mesma chamada da função através de um _array_. Também foi incluído um método utilitário @HtmlHelper::imagelink()@, para criação de links com imagens.
 
-Em @FormHelper@ as mudanças foram mais profundas.
+Em @FormHelper@ as mudanças foram mais profundas. Toda a saída gerada por @FormHelper::input()@ está diferente, sendo algo parecido com o seguinte código:
+
+pre. <div class="input text">
+    <label for="FormText">Text</label>
+	<input type="text" name="text" id="FormText" />
+</div>
+
+Além disso, ainda em @FormHelper::input()@, o parâmetro @$value@ foi removido em favor da opção @value@, dentro do _array_ de atributos passado como terceiro parâmetro.
+
+Também atendendo a vários pedidos, incluímos a criação de _radio buttons_ e _check boxes_, e mais um campo do tipo @date@, que gera três _selects_ para seleção de datas. Em @FormHelper::submit()@, a _tag_ padrão torna-se @<button>@, e é possível alternar entre @<input type="submit" />@ e @<input type="image" />@.
+
+Também vindo para atender requisições dos usuários, criamos o @DateHelper::format()@, para a formatação de datas. Outros métodos para a classe estão ainda por vir, assim como novos _helpers_.
+
+h2. Componentes
+
+Os componentes também ganharam uma boa parcela de nossa atenção durante o desenvolvimento. Não necessariamente novos componentes, mas modificações aos componentes já existentes e na forma como componentes em geral funcionam.
+
+Quanto a componentes em geral, agora, componentes estendem a classe @Component@, e não mais @Object@, e os _callbacks_ são chamados diretamente do _controller_, em vez de usar a classe @Component@ para isso.
+
+Quanto aos componentes já existentes, o @AuthComponent@ foi totalmente reescrito, ganhando várias funcionalidades que estavam faltando, como adicionar um _salt_ às senhas criptografadas, manter o _cookie_ por mais tempo, redirecionar automaticamente para a página acessada antes do redirecionamento para @AuthComponent::loginAction@, uma nova forma de definição de permissões em @AuthComponent::allow()@ e @AuthComponent::deny()@, chamada automática de @AuthComponent::login()@, uma forma mais eficiente de definir e receber erros, entre outras modificações menores. Mais informações você encontra na documentação sobre o assunto.
+
+O Spaghetti* também ganhou 3 novos componentes, incluídos na distribuição oficial: @UploadComponent@ para o _upload_ de arquivos, @ImageComponent@ para redimensionamento de imagens e @AccessControlComponent@ para controle de níveis  de acesso.
+
+h2. Outras classes
+
+Várias outras classes também sofreram modificações, a maioria afetando apenas o comportamento interno do Spaghetti*, embora algumas outras possam afetar alguns desenvolvedores. Também foram incluídas novas classes, referentes a novas funcionalidades do Spaghetti*. As mudanças mais significativas são:
+
+* @ClassRegistry::init()@, que foi movido para @ClassRegistry::load()@ e não mais retorna erros quando uma classe não pode ser instanciada.
+* @Dispatcher::parseUrl()@ foi movido para @Mapper::parse()@, que agora trata de _query strings_, transformando-as em parâmetros nomeados, que também podem ser passados por uma URL com a forma @/param:value@ e acessados com @Controller::param()@.
+* @Mapper::root()@ agora funciona como rota base, e não é mais necessário definir a rota @/@ em @routes.php@
+* Vários métodos internos deixaram de ser @public@ e foram transformados em @protected@.
+* Foram adicionadas as classes @Cookie@ e @Session@, para persistência de dados através de _cookies_ e _sessions_, respectivamente.
+* Foi adicionada a classe @Security@, com métodos para criptografia de dados.
+
+E, como não podia deixar de ser, vários bugs foram corrigidos, e dezenas de linhas de código foram refatoradas ou completamente reescritas, para tornar o código mais legível e a execução mais eficiente.
+
+Com todas essas modificações, além de outras que não foram notadas aqui mas fazem alguma diferença no comportamento interno do Spaghetti*, esperamos que você possa melhorar ainda mais seu trabalho, e com a confiança de estar usando uma ferramenta em plena melhoria. _Enjoy_!
