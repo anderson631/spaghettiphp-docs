@@ -1,0 +1,3 @@
+Seja bem vindo à documentação do Spaghetti! Aqui você pode descobrir um pouco mais sobre nosso framework, suas características e funcionalidades. Seja uma pequena dúvida ou uma grande curiosade, você encontrará aqui!
+
+Além de entregar um framework de qualidade, também nos preocupamos em mantê-lo bem documentado, para que qualquer um possa aprender a usá-lo, e tornar seu trabalho cada vez melhor. O resultado é essa documentação que, apesar de se manter simples, é compreensiva o bastante para cobrir todos os aspectos pertinentes do Spaghetti*.
