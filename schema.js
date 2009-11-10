@@ -1,4 +1,5 @@
-{
+var json = {
+    "index": "Documentação",
     "por_que": "Por que o Spaghetti*?",
     "mvc": "Introdução sobre MVC",
     "configuracao": {

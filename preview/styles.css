@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    color: #333;
+    font: 12pt Calibri, sans-serif;
+    padding: 12px 24px;
+}
+
+h1 {
+    color: #BA1A00;
+    font-size: 32pt;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+}
+    h1 + p {
+        margin: -6px 0 0;
+    }
+ 
+h2, h3, h4 {
+    margin: 16px 0;
+}
+    h2 {
+        color: #BA1A00;
+        font-size: 24pt;
+    }
+
+p {
+    line-height: 1.6em;
+    margin: 16px 0;
+}
+    p code {
+        background: #ffa;
+        padding: 2px;
+    }
+
+pre {
+    background: #ffa;
+    font: 9pt Monaco, Consolas, 'Courier New', monospace;
+    padding: 24px;
+}
+
+ul {
+    line-height: 1.6em;
+    margin-left: 12px;
+}
