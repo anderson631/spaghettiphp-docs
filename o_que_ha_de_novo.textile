@@ -14,7 +14,7 @@ pre. $this->Model->all(array(
 
 Outra grande modificação feita em @Model@ foi a remoção dos métodos relativos ao MySQL, sendo todos eles transportados para uma classe @MysqlDatasource@. Além de facilitar a manutenção e alteração de ambas as classes, isso permitirá que o suporte a novos bancos de dados sejam facilmente adicionados no futuro, bastando criar uma nova classe @Datasource@ e modificar as configurações necessárias.
 
-Além dessas modificações às funcionalidades já existentes, a nova versão também traz vários novos métodos e propriedades para @Model@: @Model::toList()@ para listagem de resultados em array no formato @id => displayField@, @Model::count()@ para contagem de resultados, @Model::begin()@, @Model::commit()@ e @Model::rollback@ para _transactions_, os _callbacks_ @Model::beforeSave()@ e @Model::afterSave()@, entre outros, todos descritos ao longo da documentação.
+Além dessas modificações às funcionalidades já existentes, a nova versão também traz vários novos métodos e propriedades para @Model@: @Model::toList()@ para listagem de resultados em _array_ no formato @id => displayField@, @Model::count()@ para contagem de resultados, @Model::begin()@, @Model::commit()@ e @Model::rollback@ para _transactions_, os _callbacks_ @Model::beforeSave()@ e @Model::afterSave()@, entre outros, todos descritos ao longo da documentação.
 
 Também incluímos duas das _features_ mais pedidas para o Spaghetti*: paginação de resultados, através de @Model::paginate()@, e validação de entrada de dados, através de @Model::validate()@.
 
@@ -33,3 +33,9 @@ As _views_ eram uma parte confusa no Spaghetti*. O código era ambíguo em vári
 Tínhamos várias reclamações de usuários que não conseguiam usar os arquivos @.phtm@ do Spaghetti* em seus editores, por se tratar de um formato de arquivo nada comum. Pensando nisso, trocamos as extensões das _views_, layouts e _elements_ do Spaghetti* para o formato @.htm.php@. Assim como antes, outros formatos também podem ser criados para outros tipos de saída, como @.xml.php@, @.js.php@, entre outros. Acreditamos que a decisão deve fazer a vida de muitos um pouquinho mais fácil.
 
 Não necessariamente ligado à _views_ em si, agora o Spaghetti* também traz uma nova tela de boas vindas, assim como novas telas de erro, todas com o mesmo _look and feel_ do nosso "site":http://spaghettiphp.org/, "fórum":http://forum.spaghettiphp.org/ e "_bug tracker_":http://dev.spaghettiphp.org/.
+
+h2. _Helpers_
+
+A classe @Helper@ permanece inalterada, mas temos algumas alterações envolvendo os _helpers_ providos com o Spaghetti*. Em @HtmlHelper@, além da correção de vários bugs, foi adicionado o parâmetro @$inline@ em @HtmlHelper::script()@ e @HtmlHelper::style()@, permitindo que a inclusão de _scripts_ e folhas de estilo possa ser feita com @View::scriptsForLayout@ e @View::stylesForLayout@, respectivamente. Ambos métodos também podem chamar os respectivos arquivos sem necessidade de definir a extensão, e vários arquivos podem ser passados na mesma chamada da função através de um _array_. Também foi incluído um método utilitário @HtmlHelper::imagelink()@, para criação de links com imagens.
+
+Em @FormHelper@ as mudanças foram mais profundas.
