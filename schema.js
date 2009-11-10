@@ -1,6 +1,6 @@
 var json = {
     "index": "Documentação",
-    "por_que": "Por que o Spaghetti*?",
+    "por-que": "Por que o Spaghetti*?",
     "mvc": "Introdução sobre MVC",
     "configuracao": {
         "index": "Configuração",
@@ -19,8 +19,8 @@ var json = {
     },
     "helpers": {
         "index": "Helpers",
-        "html_helper": "HtmlHelper",
-        "form_helper": "FormHelper"
+        "html-helper": "HtmlHelper",
+        "form-helper": "FormHelper"
     },
     "components": {
         "index": "Components",

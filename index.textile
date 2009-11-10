@@ -1,3 +1,15 @@
-Seja bem vindo à documentação do Spaghetti! Aqui você pode descobrir um pouco mais sobre nosso framework, suas características e funcionalidades. Seja uma pequena dúvida ou uma grande curiosade, você encontrará aqui!
+Seja bem vindo ao *Guia do Desenvolvedor Spaghetti**! Através desse guia, você aprenderá como o Spaghetti* pode ajudar a melhorar a forma como você desenvolve suas aplicações, esquecendo da parte repetitiva e tediosa e mantendo apenas a parte criativa do seu trabalho. Além disso, caso você já programe há algum tempo usando Spaghetti*, esse guia também servirá para que você conheça outras funcionalidades interessantes adicionadas nas últimas versões do framework, facilitando ainda mais seu trabalho.
 
-Além de entregar um framework de qualidade, também nos preocupamos em mantê-lo bem documentado, para que qualquer um possa aprender a usá-lo, e tornar seu trabalho cada vez melhor. O resultado é essa documentação que, apesar de se manter simples, é compreensiva o bastante para cobrir todos os aspectos pertinentes do Spaghetti*.
+h2. Começando
+
+Se você é novo por aqui, pode começar "descobrindo um pouco mais sobre o Spaghetti*":/docs/developer-guide/por-que, o que ele faz e por que você pode usá-lo. Mas se você já é mais experiente e sabe o que procurar, pode se guiar pela navegação ao lado, e buscar somente o que você precisa.
+
+h2. Requisitos
+
+Esse guia assume que você tem uma base de conhecimentos em PHP e um entendimento básico de programação orientada a objetos. Conhecimentos sobre a arquitetura MVC(Model-View-Controller) ou algum framework PHP serão de ajuda, mas não são requeridos.
+
+O Spaghetti* é uma ferramenta criada para quem já sabe programar. Apesar do Spaghetti* ser extremamente simples, os conhecimentos da linguagem são essenciais no dia-a-dia do desenvolvimento, requerendo alguma experiência prévia. Por essa razão, não é recomendável o uso do Spaghetti* para pessoas que entraram há pouco tempo no mundo da programação web, nem para novatos no PHP. Nesse caso, recomendamos antes acumular alguma experiência com PHP.
+
+h2. Versões Anteriores
+
+Se você busca a documentação para uma versão anterior do Spaghetti*, elas podem ser encontradas na "área de downloads":http://github.com/spaghettiphp/spaghettiphp-docs/downloads do nosso "repositório":http://github.com/spaghettiphp/spaghettiphp-docs.
