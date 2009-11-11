@@ -2,7 +2,7 @@ Seja bem vindo ao *Guia do Desenvolvedor Spaghetti**! Através desse guia, você
 
 h2. Começando
 
-Se você é novo por aqui, talvez você queira descobrir um pouco mais sobre o que o Spaghetti* pode fazer por você, e "por que utilizá-lo":/docs/developer-guide/por-que fará seu trabalho mais produtivo e divertido. Se você já tem alguma experiência com o Spaghetti*, você pode "descobrir o que há de novo":/docs/developer-guide/o-que-ha-de-novo desde a última versão, ou navegar direto para o assunto que você está procurando através da barra ao lado.
+Se você é novo por aqui, talvez você queira descobrir um pouco mais sobre "o que o Spaghetti* pode fazer por você":/docs/developer-guide/por-que, e por que utilizá-lo fará seu trabalho mais produtivo e divertido. Se você já tem alguma experiência com o Spaghetti*, você pode "descobrir o que há de novo":/docs/developer-guide/o-que-ha-de-novo desde a última versão, ou navegar direto para o assunto que você está procurando através da barra ao lado.
 
 h2. Requisitos
 
