@@ -1,47 +1,86 @@
-p(highlight). Você não precisa escrever tanto SQL. Os modelos de dados do Spaghetti*, além de facilitarem a iteração entre registros, também geram todo o SQL necessário para as suas consultas, através de __arrays__ simples, apenas com código PHP.
+Os _models_ do Spaghetti* são os responsáveis por todas as tarefas de banco de dados. É através deles que você criará, atualizará, apagará e buscará registros das tabelas de seu banco de dados. Tudo isso sem escrever uma única linha de SQL, já que o Spaghetti* abstrai tudo isso em um formato simples de _arrays_, puramente em PHP, como você verá em breve.
 
-Os __models__ do Spaghetti são os responsáveis por todas as tarefas de banco de dados. Desde criar e alterar registros até buscas complexas e relacionamentos entre tabelas, sem escrever uma única linha de SQL. Mas não se preocupe: caso você precise ser ainda mais específico, você também pode digitar diretamente suas consultas.
+h2(#models/criando). Criando _Models_
 
-h2. Criando Modelos
+Dentro da estrutura de diretórios do Spaghetti*, os _models_ se encontram em @/app/models/@. É lá onde ficarão todos os modelos de sua aplicação que você criar. O nome de arquivo de um modelo deve seguir a convenção @nome_do_modelo.php@. Por exemplo, se você criar um modelo @UserPermissions@, por exemplo, o nome do respectivo arquivo deverá ser @user_permissions.php@.
 
-Dentro da estrutura de arquivos do Spaghetti*, os modelos se encontram em @app/models@, e seguem a convenção @nome_do_modelo.php@. Basicamente, um modelo é apenas uma definição de classe vazia:
-
-pre. class Users extends AppModel { }
-
-Através da extensão da classe @AppModel@, @Users@ herda todos os métodos necessários para qualquer operação de banco de dados. Além disso, o Spaghetti* já assume que o nome da tabela do banco de dados associada a esse modelo chama-se @users@. Entretanto, caso você use nomes de tabelas diferentes dos nomes dos modelos, é possível definir o nome manualmente através da variável @table@.
+Inicialmente, um modelo é apenas uma classe vazia, que estende de @AppModel@:
 
 pre. class Users extends AppModel {
-    public $table = "users_table";
 }
+
+Quando seu modelo herda de @AppModel@, que por sua vez herda de @Model@, você terá ao seu dispor toda as funcionalidades necessárias para lidar com o banco de dados. Além disso, o Spaghetti* já relaciona por padrão um modelo com sua respectiva tabela no banco de dados, que deve ter o mesmo nome do modelo. Caso a tabela não exista, o Spaghetti* gerará um erro. No nosso caso, para que nosso _model_ funcione, você precisará ter uma tabela chamada @users@.
+
+Caso você tenha um modelo que tenha sua respectiva tabela no banco de dados com um nome diferente, ou mesmo que não possua uma tabela, é possível sobrescrever o comportamento do Spaghetti* através do atributo @table@.
+
+pre. class Users extends AppModel {
+    public $table = 'users_table';
+}
+
+Caso nosso modelo fosse usado apenas para validação de dados, e não possuísse uma tabela no banco de dados, @Users::$table@ deveria ser definido como @false@, e então o Spaghetti* ignoraria a relação do modelo com o banco de dados.
 
 h2. Buscando Registros
 
-h3. @findAll(@ mixed $conditions, mixed $order, string $limit, integer $recursion @)@
+Para a busca de registros, @Model@ conta com dois métodos: @first()@ e @all()@. @Model::first()@ é o responsável por buscar apenas o primeiro registro que atende a uma determinada condição, enquanto @Model::all()@ retorna uma lista com todos eles.
 
-|_. mixed $conditions | Array ou string contendo as condições para a busca |
-|_. mixed $order | Array ou string que define a ordenação dos registros |
-|_. string $limit | Limite de registros a serem recuperados |
-|_. integer $recursion | Número de recursões para tabelas relacionadas |
+Ambos os métodos recebem apenas um parâmetro, um _array_ contendo todas as opções da busca. Esses parâmetros são os responsáveis pela definição de condições, ordem dos registros, limite, recursão e campos a serem retornados.
 
-O método @Model::findAll()@ retorna todos os registros que obedeçam �  condição @$conditions@ especificada, ordenados por @$order@, limitando a @$limit@ registros.
+Para definir as condições de uma busca, usamos @conditions@ como item de nosso array de opções.
 
-O parâmetro @$conditions@ pode ser uma string SQL qualquer, como @username = "admin"@ ou @text LIKE "%spaghetti%"@. Entretanto, você não estaria usando de todo o potencial do Spaghetti*. Através de arrays, é possível criar uma gama enorme de condições diferentes.
+pre. $options = array(
+    "conditions" => "id = 1"
+);
+$this->Users->first($options);
 
-pre. $conditions = array(
-    "username" => "admin",
-    "text LIKE" => "%spaghetti%"
-); // equivalente a username = "admin" AND text LIKE "%spaghetti%"
-$this->Users->findAll($conditions);
+Com a busca acima, retornaremos o primeiro registro que corresponda à condição @id = 1@. Entretanto, dessa maneira estamos passando uma condição literal em SQL para o Spaghetti*, que não escapará valores e deixará sua aplicação vulnerável a ataques de _SQL injection_. Para que isso não aconteça, devemos passar condições de uma maneira que o Spaghetti* possa interpretar, escapando valores perigosos.
 
-Além de consultas simples como as usadas acima, o Spaghetti* também permite condições mais complexas, como você pode descobrir em "Condições Complexas":/docs/condicoes-complexas.
+pre. $options = array(
+    "conditions" => array(
+        "id" => 1
+    )
+);
+$this->Users->first($options);
 
-A ordenação de registros funciona de maneira semelhante, utilizando strings ou arrays. Arrays seguem a seguinte estrutura:
+p(note). *Nota*: embora seja possível passar condições literalmente para o Spaghetti*, essa prática é desencorajada, pois pode abrir brechas de segurança em sua aplicação. Caso você deseje fazer isso, lembre-se de fazer o escape de valores antes de enviá-los para a consulta. Nunca considere dados vindos do usuário como seguros!
 
-pre. $order = array("id" => "ASC", "date" => "DESC");
+Além de condições simples como essa, o Spaghetti* também suporta outros tipos de condições mais complexas. Por exemplo:
 
-O retorno do método é um array contendo vários outros arrays, tendo como chaves os nomes dos campos, pronto para uso em blocos @for@ e @foreach@, como qualquer outro array.
+pre. $options = array(
+    "conditions" => array(
+        "title LIKE" => "%Spaghetti%"
+    )
+);
 
-pre. Array
+p(note). Você pode ver como usar outros tipos de condições em "Condições":/docs/developer-guide/models/condicoes.
+
+Para definir o limite de registros que uma consulta deve devolver, usamos o item @limit@, que pode receber apenas o número de registros a retornar ou a quantidade de registros a partir de um índice.
+
+pre. $options = array(
+    "limit" => 20
+);
+$this->Users->all($options);
+
+p(note). *Nota*: se @Model::first()@ receber @limit@ como parâmetro, ele não terá efeito algum, pois sempre será sobrescrito por @1@.
+
+Para definir a ordem dos registros a serem retornados, usamos o item @order@. Assim como definimos @ORDER BY@ em SQL, essa opção também pode receber vários campos a ordernar separados por vírgula.
+
+pre. $options = array(
+    "order" => "created DESC"
+);
+$this->Users->all($options);
+
+Para definir os campos a serem retornados pela consulta, usamos o item @fields@. Por padrão, o Spaghetti* passa uma lista com todos os campos da tabela por essa opção, mas podemos sobrescrevê-la para retornar apenas os campos necessários. Esse parâmetro pode ser passado como uma _string_ contendo os campos separados por vírgulas ou como um _array_.
+
+pre. $options = array(
+    "fields" => array("id", "name", "password")
+);
+$this->Users->all($options);
+
+O retorno desses métodos é um _array_ comum, que pode ser iterado normalmente através de @for@ ou @foreach@. A estrutura desse _array_ é semelhante à seguinte:
+
+pre.. $this->Users->all($options);
+// retornará
+Array
 (
     [0] => Array
         (
@@ -63,55 +102,14 @@ pre. Array
         )
 )
 
-h3. @find(@ mixed $conditions, mixed $order, integer $recursion @)@
-
-|_. mixed $conditions | Array ou string contendo as condições para a busca |
-|_. mixed $order | Array ou string que define a ordenação dos registros |
-|_. integer $recursion | Número de recursões para tabelas relacionadas |
-
-O método @Model::find()@ funciona exatamente como @Model::findAll()@, exceto por retornar apenas o *primeiro* registro que obedeça � s condições passadas. A estrutura do array também é ligeiramente diferente, sendo unidimensional:
-
-pre. Array
+$this->Users->first($options);
+// retornará
+Array
 (
     [id] => 1,
     [username] => admin
     [password] => spaghettiphp
 )
-
-h3. @findAllBy(@ string $field, string $value, mixed $conditions, mixed $order, string $limit, integer $recursion @)@
-
-|_. string $field | Campo a ser utilizado como condicional |
-|_. string $value | Valor usado como condição para o campo |
-|_. mixed $conditions | Array ou string contendo condições adicionais para a busca |
-|_. mixed $order | Array ou string que define a ordenação dos registros |
-|_. string $limit | Limite de registros a serem recuperados |
-|_. integer $recursion | Número de recursões para tabelas relacionadas |
-
-@Model::findAllBy()@ busca todos os registros em que @$field@ seja igual a @$value@, usando @$conditions@ como parâmetros adicionais. Seu retorno é idêntico a @Model::findAll()@. Esse método é útil quando se quer usar apenas um campo como condição para a busca:
-
-pre. $this->Users->findAllBy("level", "admin");
-
-Apesar do propósito da função ser a busca por apenas um campo, é possível adicionar outros campos como condições adicionais, tornando a busca um pouco mais específica:
-
-pre. $this->Users->findAllBy("level", "user", array("approved" => true));
-
-Também é possível utilizar um atalho para essa função, @Model::findAllBy<field>()@, onde @$field@ é definido no próprio nome da função, e suprimido da lista de argumentos. Assim, @$value@ se torna o primeiro argumento.
-
-pre. $this->Users->findAllByLevel("user", array("approved" => true));
-
-h3. @findBy(@ string $field, string $value, mixed $conditions, mixed $order, integer $recursion @)@
-
-|_. string $field | Campo a ser utilizado como condicional |
-|_. string $value | Valor usado como condição para o campo |
-|_. mixed $conditions | Array ou string contendo condições adicionais para a busca |
-|_. mixed $order | Array ou string que define a ordenação dos registros |
-|_. integer $recursion | Número de recursões para tabelas relacionadas |
-
-@Model::findBy()@ funciona como @Model::findAllBy()@, exceto por retornar apenas o *primeiro* item encontrado, em um array unidimensional.
-
-Assim como @Model::findAllBy()@, também aceita o atalho @Model::findAllBy<field>()@:
-
-pre. $this->Users->findAllById(1);
 
 h2. Salvando Registros
 

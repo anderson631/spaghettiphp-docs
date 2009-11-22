@@ -11,7 +11,7 @@ var json = {
     "models": {
         "index": "Models",
         "relacionamentos": "Relacionamentos",
-        "condicoes": "Condições Complexas"
+        "condicoes": "Condições"
     },
     "controllers": "Controllers",
     "views": {
