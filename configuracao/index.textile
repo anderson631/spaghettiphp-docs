@@ -2,7 +2,7 @@ Ao contrário do que você possa imaginar, a configuração de um _framework_ n�
 
 Se você pretende criar uma aplicação que não utilize banco de dados, o Spaghetti* está pronto para rodar assim que ele for instalado. Como sabemos que isso raramente acontece, a única configuração básica para que uma aplicação comum funcione é a configuração de banco de dados.
 
-h2. Configurando o banco de dados
+h2(#configuracao/db). Configurando o banco de dados
 
 Para configurar seu banco de dados, você precisa editar o arquivo @/app/config/database.php@. O Spaghetti* já vem com algumas configurações de exemplo como mostrado abaixo, então você só precisará alterar os campos necessários.
 
@@ -36,7 +36,7 @@ Em cada configuração, você pode definir as configurações necessárias para 
 * @database@ define o nome do banco de dados em que o Spaghetti* irá se conectar.
 * @prefix@ define o prefixo que as tabelas do banco de dados estão utilizando. Normalmente esse prefixo é usado apenas para evitar colisão com tabelas pré-existentes no banco de dados.
 
-h2. Escolhendo o Ambiente de Desenvolvimento
+h2(#configuracao/environment). Escolhendo o Ambiente de Desenvolvimento
 
 Em @/app/config/settings.php@, você pode escolher o _environment_ a ser usado com o Spaghetti* através da configuração @environment@:
 
