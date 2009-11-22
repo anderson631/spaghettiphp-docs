@@ -12,7 +12,9 @@ h2(#mvc/controllers). Controladores
 
 É nos controladores, ou _Controllers_, que a mágica da sua aplicação realmente acontece. É aqui onde você irá tratar as respostas do usuário, buscar e processar dados e retorná-los para as _Views_. Nada de código HTML, nada de CSS, nada de JavaScript. Única e puramente código PHP, sem misturar as coisas.
 
-Mesmo você estando no comando, o Spaghetti* irá lhe auxiliar dando acesso aos seus _Models_ e facilitando o envio de dados para as _Views_. Você se diverte programando, e o Spaghetti* o ajuda com o resto. Além disso, já existem vários componentes que o ajudarão a resolver problemas comuns no desenvolvimento, como upload de arquivos, redimensionamento de imagens, entre outros. Caso você encontre uma tarefa comum que ainda não possua um componente, o Spaghetti* lhe fornece uma forma extremamente simples para a criação de novos componentes.
+Dentro dos _controllers_, as funcionalidades são separadas em métodos, que são chamados _actions_. Cada _action_ corresponde a uma ação dentro de sua aplicação, e geralmente cada ação possui uma "_view_":#mvc/views relacionada. Cada _action_ é responsável por uma pequena funcionalidade de sua aplicação, fazendo com que ela seja modular, e cada ação não se misture com as outras.
+
+Mesmo você estando no comando dos _controllers_, o Spaghetti* irá lhe auxiliar dando acesso aos seus _Models_ e facilitando o envio de dados para as _Views_. Você se diverte programando, e o Spaghetti* o ajuda com o resto. Além disso, já existem vários componentes que o ajudarão a resolver problemas comuns no desenvolvimento, como upload de arquivos, redimensionamento de imagens, entre outros. Caso você encontre uma tarefa comum que ainda não possua um componente, o Spaghetti* lhe fornece uma forma extremamente simples para a criação de novos componentes.
 
 h2(#mvc/views). Visualizações
 
