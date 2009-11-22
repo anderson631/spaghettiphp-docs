@@ -5,7 +5,8 @@ var json = {
     "mvc": "Introdução sobre MVC",
     "configuracao": {
         "index": "Configuração",
-        "rotas": "Rotas"
+        "rotas": "Rotas",
+        "classe-config": "A classe Config"
     },
     "models": {
         "index": "Models",

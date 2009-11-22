@@ -30,10 +30,11 @@ p {
     line-height: 22px;
     margin: 20px 0;
 }
-    p code {
+    p code,
+    li code {
         background: #222;
         font: 9pt Monaco, Consolas, 'Courier New', monospace;
-        padding: 2px;
+        padding: 1px 3px;
     }
 
 pre {
@@ -45,4 +46,12 @@ pre {
 ul {
     line-height: 1.6em;
     margin-left: 12px;
+}
+
+li {
+    margin: 2px 0;
+}
+
+a {
+    color: #9c0;
 }
