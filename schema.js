@@ -1,6 +1,6 @@
 var json = {
     "index": "Guia do Desenvolvedor",
-    "por-que": "Por que o Spaghetti*?",
+    "por-que": "Por que usar o Spaghetti*?",
     "o-que-ha-de-novo": "O que há de novo",
     "mvc": "Introdução sobre MVC",
     "configuracao": {
