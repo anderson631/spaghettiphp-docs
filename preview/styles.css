@@ -31,12 +31,13 @@ p {
     margin: 20px 0;
 }
     p code {
-        background: #ffa;
+        background: #222;
+        font: 9pt Monaco, Consolas, 'Courier New', monospace;
         padding: 2px;
     }
 
 pre {
-    background: #ffa;
+    background: #222;
     font: 9pt Monaco, Consolas, 'Courier New', monospace;
     padding: 24px;
 }
