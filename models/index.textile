@@ -19,7 +19,7 @@ pre. class Users extends AppModel {
 
 Caso nosso modelo fosse usado apenas para validação de dados, e não possuísse uma tabela no banco de dados, @Users::$table@ deveria ser definido como @false@, e então o Spaghetti* ignoraria a relação do modelo com o banco de dados.
 
-h2. Buscando Registros
+h2(#model/buscando). Buscando Registros
 
 Para a busca de registros, @Model@ conta com dois métodos: @first()@ e @all()@. @Model::first()@ é o responsável por buscar apenas o primeiro registro que atende a uma determinada condição, enquanto @Model::all()@ retorna uma lista com todos eles.
 
@@ -111,7 +111,7 @@ Array
     [password] => spaghettiphp
 )
 
-h2. Salvando Registros
+h2(#model/salvando). Salvando Registros
 
 O salvamento de registros é sempre algo complicado. Primeiro é necessário saber se um registro existe, para depois podermos decidir se ele deve ser inserido ou se deve ser apenas atualizado. Com o Spaghetti*, você se preocupa apenas em enviar os dados, e o resto é gerenciado pelo _framework_.
 
@@ -150,74 +150,54 @@ pre. $this->Users->save(array(
 ));
 echo $this->Users->id; // => 4
 
-h2. Campos _created_ e _modified_
+h2(model/created-modified). Campos _created_ e _modified_
 
-Muitas vezes é necessário manter registro das datas de criação e modificação de um registro. Para que você não precise explicitamente definir valor para esses campos, o Spaghetti* faz isso para você.
+Muitas vezes é necessário manter registro das datas de criação e modificação de um registro. Para que você não precise explicitamente definir um valor para esses campos, o Spaghetti* faz isso para você automaticamente.
 
-Para que esse comportamento seja usado, é necessário ter os campos @created@ ou @modied@ definidos como @DATETIME@ em sua tabela. O campo @created@ é definido apenas uma vez, na criação do registro, e somente caso não tenha um valor já definido em @$data@. Já o campo @modified@ é redefinido a cada salvamento do registro, também somente caso não esteja definido em @$data@.
+Para usar essa funcionalidade, sua tabela precisa ter os campos @created@ (para a data de criação de um registro) e/ou @modified@ (para a data de modificação de um registro). Ambos precisam ser do tipo @DATE@ ou @DATETIME@. O campo @created@ é definido apenas uma vez, na criação do registro, e depois não é mais alterado. Já @modified@ é modificado a cada alteração do registro, contendo a data/hora da alteração mais recente.
 
-h4. Prevenção contra SQL Injection
+h2(#model/apagando). Apagando Registros
 
-Também somos preocupados com segurança. Por isso, toda e qualquer string usada como valor é passada pelo método @Model::escape()@, escapando qualquer caracter que possa ser perigoso caso esteja em uma consulta SQL. E não se preocupe com @magic_quotes@, o modelo já faz a verificação e elimina barras quando necessário.
+@Model::delete()@ apaga um registro do banco de dados a partir do valor de sua chave primária, passada por primeiro parâmetro. Por exemplo, para apagarmos um usuário de @id = 3@, fazemos a seguinte chamada:
 
-Caso você precise fazer consultas de maneira manual, ou precise escapar qualquer string dentro da aplicação, basta usar essa mesma função.
+pre. $this->Users->delete(3);
 
-pre. $this->Users->escape("String 'potencialmente' perigosa");
-// Retorna "String \'potencialmente\' perigosa"
+Caso a operação tenha sido executada com sucesso, o método retorna @true@, e @false@ caso algo de errado tenha ocorrido.
 
-h3. @saveAll(@ array $data @)@
+Por padrão, @Model::delete()@ apagará todos os "registros relacionados":/docs/developer-guide/models/relacionamentos ao registro sendo apagado. Para evitar que isso ocorra, e que os registros dependentes sejam mantidos, passe o segundo parâmetro com o valor @false@.
 
-|_. array $data | Dados a serem salvos |
+O Spaghetti* também permite que você apague vários registros de uma só vez, a partir de determinada condição. Para isso, usamos o método @Model::deleteAll()@, recebendo como parâmetro as opções para a exclusão. As opções para a exclusão de registros funciona de maneira semelhante às "opções para busca de registros":#model/buscando. Por exemplo, o código abaixo apagará os primeiros 50 registros com data anterior a 01/12/2009:
 
-Caso você precise salvar vários registros de uma só vez, o Spaghetti* lhe dá a opção do método @Model::saveAll()@. Ele dispõe de todas as funcionalidades de @Model::save()@, com exceção do parâmetro recebido. Esse parâmetro deve ser um array com a seguinte estrutura:
+pre. $this->Users->deleteAll(array(
+    "conditions" => array(
+        "created <" => "2009-12-01"
+    ),
+    "limit" => 50,
+    "order" => "created ASC"
+));
 
-pre. Array
-(
-    [0] => Array
-        (
-            [id] => 1
-            [name] => admin,
-            [password] => spaghettiphp
-        )
-    [1] => Array
-        (
-            [id] => 2
-            [name] => root,
-            [password] => root
-        )
-    [2] => Array
-        (
-            [id] => 3
-            [name] => user
-            [password] => 123456
-        )
-)
+p(note). *Nota*: quando @Model::deleteAll()@ é executado, os registros dependentes não são apagados!
 
-h2. Apagando Registros
+h2(#model/metodos-personalizados). Métodos Personalizados
 
-h3. @delete(@ integer $id @)@
+Os modelos de dados do Spaghetti* são poderosos o suficiente para executar as tarefas mais simples na interação com o banco de dados, sem que você precise se preocupar com o tipo de banco de dados que você está se conectando e nem com SQL. Entretanto, algumas vezes é necessário realizar tarefas mais complexas, que ocupariam muito código no _controller_ que, no fim das contas, pertence mesmo aos modelos. Além disso, muito código repetitivo, como retornar os últimos @n@ registros de uma tabela, pode ser centralizado em um único lugar, deixando os _controllers_ ainda mais leves e fazendo somente aquilo que é necessário para eles.
 
-|_. integer $id | ID do registro a ser apagado |
 
-@Model::delete()@ apaga apenas um registro com ID @$id@ da tabela. Como ele é limitado a apenas um registro, mesmo que existam vários IDs iguais, apenas o primeiro será apagado.
 
-h3. @deleteAll(@ mixed $conditions, mixed $order, integer $limit @)@
 
-|_. mixed $conditions | Array ou string contendo as condições para que um registro seja apagado |
-|_. mixed $order | Array ou string que define a ordenação dos registros a serem apagados |
-|_. integer $limit | Limite de registros apagados |
 
-@Model::deleteAll()@ faz a remoção de vários registros de uma única vez, apagando registros que obedeçam � s condições @$conditions@, ordenados por @$order@ e limitados por @$limit@.
 
-Esse método é útil quando é necessário apagar vários registros, que não obedeçam apenas a IDs, como usuários não aprovados ou mensagens de spam.
 
-pre. $this->Users->deleteAll(array("approved" => false));
 
-h2. __Joins__ ou relacionamentos
 
-O Spaghetti* suporta três tipos de relacionamentos, ou __joins__: um para um, um para muitos e muitos para um. "Saiba Mais":/docs/relacionamentos-entre-models.
 
-h2. Métodos Personalizados
+
+
+
+
+
+
+
 
 Os modelos de dados do Spaghetti* são poderosos o suficiente para prover todas as funcionalidades básicas que você precisa para desenvolver sua aplicação sem se preocupar com detalhes como escrever SQL. Entretanto, você pode precisar de um pouco mais.
 
