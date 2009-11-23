@@ -113,28 +113,44 @@ Array
 
 h2. Salvando Registros
 
-h3. @save(@ array $data @)@
+O salvamento de registros é sempre algo complicado. Primeiro é necessário saber se um registro existe, para depois podermos decidir se ele deve ser inserido ou se deve ser apenas atualizado. Com o Spaghetti*, você se preocupa apenas em enviar os dados, e o resto é gerenciado pelo _framework_.
 
-|_. array $data | Dados a serem salvos |
+Para o salvamento de registros, usa-se apenas o método @save()@, passando como parâmetros apenas os dados a serem salvos em formato de um _array_ semelhante ao seguinte:
 
-O salvamento de registros é sempre algo complicado. Primeiro é necessário saber se um registro existe, para depois podermos decidir se ele deve ser inserido ou se deve ser apenas atualizado. Com o Spaghetti*, você se preocupa apenas em enviar os dados, e o resto é trabalho do __framework__.
+pre. $data = array(
+    "id" => 1,
+    "username" => "admin",
+    "password" => "spaghettiphp"
+);
 
-Para que o Spaghetti* possa salvar corretamente os dados, o array @$data@ deve ser construído assim:
+Chamando @Model::save()@, o retorno será @true@ caso o registro tenha sido salvo, ou @false@ caso tenha havido algum erro no processo.
 
-pre. Array
-(
-    [id] => 1,
-    [username] => admin
-    [password] => spaghettiphp
-)
+pre. $this->Users->save($data); // => true
 
-Caso algum campo não seja passado, ele não será considerado na consulta SQL, ou seja, ele permanecerá intacto na tabela, caso exista. Se você passar algum campo inexistente, ele será completamente desconsiderado, então não é necessário se preocupar em limpar arrays vindos de formulários.
+O Spaghetti* sabe se um registro existe ou não a partir do valor da chave primária do registro que você está salvando. Caso esse valor da chave primária seja @null@ ou não exista no banco de dados, um novo registro é criado. Caso contrário, o registro existente é atualizado. Por padrão, o nome da chave primária no Spaghetti* é o mesmo valor da chave primária no banco de dados. Se o seu banco de dados não tem um campo definido como chave primária, é necessário definí-la manualmente no seu _model_ através de @Model::primaryKey@:
 
-Para que o modelo possa descobrir se o registro já existe na tabela, é necessário que seja passado o campo @id@. É realizada uma busca na tabela, e caso outro registro com mesma identificação já exista, ele é atualizado. Caso contrário, ele é criado. Tudo isso na mesma função, sem você precisar se preocupar.
+pre. class Users extends AppModel {
+    public $primaryKey = "id_user";
+}
 
-p(note). Quando estiver usando @Model::save()@ dentro de loops, não esqueça de usar @Model->create()@ para evitar que os dados sejam sobrescritos.
+@Model::save()@ usa, inicialmente, @$data[$this->primaryKey]@ (que se transformaria em @$data["id"]@, por padrão) como o valor da chave primária do registro a ser salvo. Caso ele não esteja definido ou seja @null@, o Spaghetti* usará o valor presente em @Model::id@. No exemplo abaixo, o registro com @id = 2@ é atualizado:
 
-h4. @created@ e @modified@
+pre. $this->Users->id = 2;
+$this->Users->save(array(
+    "password" => "654321"
+));
+
+p(note). *Nota*: quando você estiver salvando vários registros do mesmo _model_, como em um _loop_, lembre-se de definir @id = null@ para que os registros não sejam sobrescritos.
+
+Quando um novo registro é criado, @Model@ também altera o valor de @Model::id@ para o id da última inserção. Assim, não é necessário fazer uma chamada a outro método para recuperar esse valor.
+
+pre. $this->Users->save(array(
+    "username" => "spaghetti_framework",
+    "password" => "abcdef"
+));
+echo $this->Users->id; // => 4
+
+h2. Campos _created_ e _modified_
 
 Muitas vezes é necessário manter registro das datas de criação e modificação de um registro. Para que você não precise explicitamente definir valor para esses campos, o Spaghetti* faz isso para você.
 
