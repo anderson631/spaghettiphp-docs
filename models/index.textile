@@ -182,33 +182,16 @@ h2(#model/metodos-personalizados). Métodos Personalizados
 
 Os modelos de dados do Spaghetti* são poderosos o suficiente para executar as tarefas mais simples na interação com o banco de dados, sem que você precise se preocupar com o tipo de banco de dados que você está se conectando e nem com SQL. Entretanto, algumas vezes é necessário realizar tarefas mais complexas, que ocupariam muito código no _controller_ que, no fim das contas, pertence mesmo aos modelos. Além disso, muito código repetitivo, como retornar os últimos @n@ registros de uma tabela, pode ser centralizado em um único lugar, deixando os _controllers_ ainda mais leves e fazendo somente aquilo que é necessário para eles.
 
+O Spaghetti* todo orientado a objetos. Então, seu _model_ não apenas herda todas os métodos e propriedades de @Model@, mas também pode implementar seus próprios métodos, como se fosse uma classe qualquer.
 
+Suponha que você possui um _model_ @News@, que é responsável por trazer a várias partes de sua aplicação a lista das @$n@ últimas notícias. Você pode implementar esse método assim:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Os modelos de dados do Spaghetti* são poderosos o suficiente para prover todas as funcionalidades básicas que você precisa para desenvolver sua aplicação sem se preocupar com detalhes como escrever SQL. Entretanto, você pode precisar de um pouco mais.
-
-Não esqueça que as classes de modelo podem ser estendidas: basta você adicionar métodos e propriedades! Qualquer função repetitiva relacionada a banco de dados deve ser escrita aqui. Depois, você poderá usá-la em qualquer __controller__ que use esse modelo. DRY(Don't Repeat Yourself), tudo definido em um lugar só!
-
-pre. class Posts extends AppModel {
-    public function findLastPosts() {
-        return $this->findAll(array("created <" => "curdate()"), array("created" => "DESC"));
+pre. class News extends AppModel {
+    public function last($n) {
+        return $this->all(array(
+            "limit" => $n
+        ));
     }
 }
 
-O método @Posts::findLastPost()@, depois de definido, pode ser utilizado normalmente dentro de um controller.
-
-pre. $this->Posts->findLastPosts();
+Essa técnica, além de facilitar o uso e manutenção de muitas tarefas repetitivas, também pode ser usada para implementar o conceito de _fat models, skinny controllers_. Esse conceito consiste em colocar o máximo possível de lógica de negócio nos _models_, fazendo com que _controllers_ apenas acessem métodos de _models_, sem precisar se preocupar com toda a lógica envolvida no processamento dos registros. Esse conceito torna a manutenção e compreensão de suas aplicações muito mais simples, e o código passa a _dizer mais_ e a fazer mais sentido.
