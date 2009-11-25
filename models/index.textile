@@ -235,3 +235,19 @@ h2(#model/callbacks). _Callbacks_
 
 
 h2(#model/parametros). Parâmetros padrão
+
+Notícias geralmente são classificadas pela sua data de criação em ordem decrescente, um usuário sempre deve estar aprovado para poder usar um sistema, entre outros, são os tipos de parâmetros que se repetem para cada busca em sua aplicação. Portanto, não seria interessante definir um padrão para todas as buscas, e sobrescrevê-lo apenas quando necessário? O Spaghetti* permite isso.
+
+Para tal, existem 4 atributos de @Model@ que podem ser definidos como padrão para todas as buscas: @Model::conditions@, @Model::order@ e @Model::limit@ e @Model::recursion@, todos eles correspondendo aos parâmetros de @Model::all()@ e @Model::first()@.
+
+pre.. class Users extends AppModel {
+    public $conditions = array(
+        "approved" => 1
+    );
+}
+
+class News extends AppModel {
+    public $order = "created DESC";
+}
+
+p(note). *Nota*: em todas as buscas, os parâmetros padrão serão usados, a menos que sejam sobrescritos. Por exemplo, uma condição @approved = 1@ só não será usada caso seja sobrescrita por outra condição como @approved <> 1@.
