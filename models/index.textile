@@ -195,3 +195,43 @@ pre. class News extends AppModel {
 }
 
 Essa técnica, além de facilitar o uso e manutenção de muitas tarefas repetitivas, também pode ser usada para implementar o conceito de _fat models, skinny controllers_. Esse conceito consiste em colocar o máximo possível de lógica de negócio nos _models_, fazendo com que _controllers_ apenas acessem métodos de _models_, sem precisar se preocupar com toda a lógica envolvida no processamento dos registros. Esse conceito torna a manutenção e compreensão de suas aplicações muito mais simples, e o código passa a _dizer mais_ e a fazer mais sentido.
+
+h2(#model/count). Contando Registros
+
+Para a contagem de registros, o Spaghetti* usa o método @Model::count()@. O método recebe como parâmetro um _array_ de opções semelhante aos usados por @Model::all()@, indicando as condições da contagem e os campos a serem contados.
+
+pre. $this->Users->count(array(
+    "conditions" => array("approved" => 1)
+));
+
+A definição dos campos usados na contagem é útil quando precisamos contar registros distintos, por exemplo:
+
+pre. $this->Users->count(array(
+    "fields" => "DISTINCT state"
+));
+
+h2(#model/query-fetch). Fazendo consultas diretamente ao banco de dados
+
+Algumas vezes, em aplicações de maior porte, é necessário refinar as consultas SQL para que elas sejam realizadas mais rapidamente e ocupando menos recursos. Ou então você precisa realizar uma operação mais complexa, a qual o Spaghetti* não cobre ou leva muito tempo para executar. Nesses casos, você pode optar por escrever SQL diretamente, e fazer a consulta junto ao servidor de banco de dados.
+
+Para consultas que não exigem retorno (ou que você não deseja que o Spaghetti* processe esse retorno), existe o método @Model::query()@. Como parâmetro, você passa apenas a consulta SQL já montada e pronta para ser executada.
+
+pre. $this->Users->query("DELETE FROM users WHERE approved = 0");
+
+p(note). *Nota*: quando você executar consultas diretamente, o Spaghetti* não conseguirá escapar valores perigosos automaticamente. Por isso, sempre tome cuidado quando as consultas envolverem dados vindos do usuário.
+
+Caso a sua consulta deva trazer alguma coisa como retorno, você pode usar o método @Model::fetch()@, também recebendo como parâmetro apenas a consulta SQL. O método só difere de @Model::query()@ pois o resultado da consulta é interpretado pelo Spaghetti* e retornado na forma de um _array_, como qualquer outra consulta feita por @Model::all()@, por exemplo.
+
+pre. $users = $this->Users->fetch("SELECT id, username, password FROM users WHERE approved = 1");
+
+Vale lembrar uma coisa: evite colocar chamadas diretas ao banco de dados dentro de seus _controllers_. Lembra de "_fat models, skinny controllers_":#model/metodos-personalizados? Pois então, sempre que você precisar realizar uma consulta específica, crie um novo método em seu _model_, ajudando a manter toda a lógica possível fora dos _controllers_!
+
+
+h2(#model/transactions). _Transactions_
+
+h2(#model/to-list). ToList
+
+h2(#model/callbacks). _Callbacks_
+
+
+h2(#model/parametros). Parâmetros padrão
