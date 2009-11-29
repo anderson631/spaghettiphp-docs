@@ -229,10 +229,45 @@ Vale lembrar uma coisa: evite colocar chamadas diretas ao banco de dados dentro 
 
 h2(#model/transactions). _Transactions_
 
-h2(#model/to-list). ToList
+_Transactions_ mantém a integridade dos dados em suas tabelas, evitando dados inconsistentes em caso de algum erro durante a criação ou alteração de registros. Para usar _transactions_ com o Spaghetti*, existem os métodos @Model::begin()@, @Model::commit()@ e @Model::rollback()@.
+
+@Model::begin()@ inicia uma _transaction_. Esse método fará com que todos os comandos enviados ao banco de dados tornem-se atômicos, permitindo que eles sejam desfeitos em caso de erro. Para desfazer as operações feitas durante uma transação, usa-se o método @Model::rollback()@. Se todas as operações foram realizadas com sucesso, usa-se @Model::commit()@ para confirmá-las.
+
+pre. $this->Users->begin();
+if($this->Users->save($this->data) && $this->Users->Profiles->save($this->data["profile"])):
+    $this->Users->commit();
+else:
+    $this->Users->rollback();
+endif;
 
 h2(#model/callbacks). _Callbacks_
 
+Se você deseja implementar alguma lógica antes ou depois do salvamento de registros no Spaghetti*, você pode usar alguns _callbacks_ em @Model@.
+
+_Callbacks_ são métodos que, quando definidos, podem processar dados vindos do _controller_ antes do salvamento, ou implementar alguma ação após o salvamento dos registros. Os dois _callbacks_ disponíveis atualmente são @Model::beforeSave()@, para lógica antes do salvamento, e @Model::afterSave()@, para lógica após o salvamento.
+
+@Model::beforeSave()@ recebe como parâmetro os dados vindos do _controller_. Com isso, é possível fazer todo o processamento necessário, e o retorno do método será enviado de volta para @Model::save()@. Caso o método retorne @false@, o salvamento será interrompido.
+
+pre. class Users extends AppModel {
+    public function beforeSave($data) {
+        if(!empty($data["password"])):
+            $data["password"] = Security::hash($data["password"]); // fazendo o hash da senha de um usuário
+            return $data;
+        else:
+            return false;
+        endif;
+    }
+}
+
+Já @Model::afterSave()@ recebe como parâmetro apenas um valor booleano @true@ quando um registro novo é criado, e @false@ quando um registro é atualizado.
+
+pre. class Users extends AppModel {
+    public function afterSave($created) {
+        if(!$created):
+            $this->Profiles->id = $this->id;
+        endif;
+    }
+}
 
 h2(#model/parametros). Parâmetros padrão
 
@@ -251,3 +286,5 @@ class News extends AppModel {
 }
 
 p(note). *Nota*: em todas as buscas, os parâmetros padrão serão usados, a menos que sejam sobrescritos. Por exemplo, uma condição @approved = 1@ só não será usada caso seja sobrescrita por outra condição como @approved <> 1@.
+
+h2(#model/to-list). ToList
