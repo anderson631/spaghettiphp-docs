@@ -1,36 +1,29 @@
-p(highlight). Por muitas vezes você ocupa pequenos trechos de código em várias páginas, porém estes trechos não fazem parte de um "layout":/docs/layouts. Não se repita, utilize __elements__. Elementos são arquivos de "View":/docs/views que servem para armazenar pequenos trechos de código (__snippets__) compartilhados por outras __views__ diferentes.
+Muitas vezes, alguns trechos de código aparecem em várias _views_ diferentes, mas não necessariamente no mesmo local na página. Por isso, nem sempre é possível colocar esses trechos em um _layout_. Mas não se repita! O conceito de _elements_, pequenos pedaços de apresentação reutilizáveis em qualquer lugar de sua aplicação, estão aqui para lhe salvar.
 
-Quer um exemplo? Vamos supor que você tenha um formulário de login no topo de sua página, e queira colocar outro formulário no meio do conteúdo. Você pode pensar, então, em copiar e colar o código. Porém, ao invés de copiar e colar o código HTML deste formulário cada vez que você precisar usá-lo, você pode criar um __element__ com este HTML e então o importá-lo nos locais onde desejar.
+Os _elements_ são conceitualmente idênticos a uma _view_. A diferença principal é que, por serem pequenas pedaços de apresentação sem vínculo com _controllers_, eles podem ser injetados dentro de outras _views_ ou _layouts_. A principal utilidade dos _elements_ é evitar a repetição de código, mas eles também podem ser usados para mover partes mais complexas de suas _views_ ou _layouts_ para outro arquivo onde você poderá ter uma visão melhor apenas daquela parte.
 
-Supondo que algum dia você precise alterar o seu formulário de login, terá que fazê-lo uma única vez. Com __elements__ você ganha na manutenção, pois cada um destes trechos de código fica centralizado em um arquivo.
+Quer um exemplo mais concreto da utilização de _elements_? Vamos supor que você tenha um formulário de _login_ no topo de suas páginas, e queira colocar outro formulário, exatamente igual, no meio do conteúdo. Você pode pensar, então, em copiar e colar o código. Porém, ao invés de copiar e colar o código HTML deste formulário cada vez que você precisar usá-lo, você pode criar um _element_ com este código e então o importá-lo nos locais onde desejar.
 
-h2. Criando um __element__
+Supondo que algum dia você precise alterar o seu formulário de _login_, terá que fazê-lo uma única vez. Com _elements_ você ganhará na manutenção, pois cada um destes trechos de código fica centralizado em apenas um arquivo, em vez de vários trechos espalhados por várias partes de sua aplicação.
 
-A criação é muito simples. Crie um arquivo com o nome desejado para seu __element__, com a extensão @.phtm@, logo na pasta @app/views/@, sem colocar em nenhuma subpasta. No início do nome do arquivo deve constar um caracter __underscore__ (@_@), para sinalizar que aquele arquivo é um __element__. Veja o exemplo abaixo:
+h2(#elements/criando). Criando um _element_
 
-pre. app/views/_formulario_de_login.phtm
+A criação de um _element_ é muito simples. Crie um arquivo com o nome desejado para seu _element_, com a extensão @.htm.php@, na raíz da pasta @/app/views@. No início do nome desse arquivo deve haver um caracter _underscore_ @_@, para sinalizar que aquele arquivo é um _element_. No caso do nosso exemplo do formulário de _login_, esse _element_ poderia estar em @/app/views/_login.htm.php@.
 
-Quando você quiser incluir o conteúdo deste __element__ em alguma outra __view__, seja ela estática, dinâmica ou um __layout__, basta utilizar o método __$this->element()__, passando como parâmetro o nome do elemento sem o __underscore__ nem a extensão do arquivo:
+Quando você quiser incluir o conteúdo deste _element_ em alguma outra _view_, seja ela estática, dinâmica, um _layout_ ou mesmo outro _element_, basta utilizar o método @View::element()@, passando como parâmetro o nome do elemento sem o _underscore_ nem a extensão do arquivo.
 
-pre. <?php echo $this->element("formulario_de_login"); ?>
+pre. <?php echo $this->element("login") ?>
 
-E pronto. O conteúdo do elemento será renderizado tantas vezes quanto for chamado, e nos lugares onde for chamado.
+E pronto! O conteúdo do elemento será renderizado tantas vezes quanto for chamado, e nos lugares onde for chamado, sem que você precise copiar e colar código para isso.
 
-h3. Passando parâmetros para __elements__
+h2(#elements/parametros). Passando parâmetros para _elements_
 
-Hora ou outra você pode precisar passar conteúdo dinâmico para um __element__. Por exemplo, você pode criar um __element__ para armazenar um elemento @<select>@ com a lista dos estados nacionais. Este elemento de formulário seria utilizado em diferentes formulários no seu site.
+Como _elements_ foram criados para ser pedaçoes de apresentação reusáveis, eles não compartilham das mesmas variáiveis que as _views_ e _layouts_. Entretanto, é possível passar variáveis explicitamente para eles, através do segundo parâmetro de @View::element()@.
 
-Porém, você pode querer passar para este campo de formulário qual é o estado que deve estar selecionado, baseado no estado onde o usuário logado mora. Sem __elements__, além de manter diversos formulários por todo o site, você teria que reescrever código e a cada manutenção, bom, você já sabe.
+pre. <?php echo $this->element("login", array(
+     "remember_me" => true
+)) ?>
 
-Para passar variáveis para um __element__, ao usar o método @$this->element()@ você pode passar como segundo parâmetro um __array__, onde a chave de um item é o nome da variável e seu valor é o conteúdo da variável, como no exemplo:
+Cada variável passada como parâmetro é depois lida como uma variável local dentro do _element_, como se fosse uma variável definida por @Controller::set()@ sendo acessada dentro de uma _view_.
 
-pre. $options = array(
-     "selectedState" => "SP"
-);
-echo $this->element("formulario_dos_estados", $options);
-
-E então, dentro do __element__ você possui condições de manipular esta variável, chamando-a pelo nome.
-
-pre. <?php echo $selectedState; ?>
-
-__Elements__ são um instrumento bastante interessante de manter o código reaproveitável e de mais fácil manutenção. Use sem moderação ;D
+h2(#elements/organizando). Organizando _elements_
