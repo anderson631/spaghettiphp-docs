@@ -20,33 +20,49 @@ pre. class PostsController extends AppController {
     }
 }
 
-A primeira coisa que devemos saber para podermos interagir entre _controllers_ e _views_ é como se faz a passagem de variáveis. Como variáveis locais perderiam-se no caminho, usa-se o método @Controller::set()@, passando como parâmetros o nome da variável e seu respectivo valor. Dentro da _view_, essa variável estará disponível como uma variável local comum, acessível por @$posts@, no nosso caso.
+A primeira coisa que devemos saber para podermos interagir entre _controllers_ e _views_ é como se faz a passagem de variáveis. Como variáveis locais perderiam-se no caminho, usa-se o método @Controller::set()@, passando como parâmetros o nome da variável e seu respectivo valor. Dentro da _view_, essa variável estará disponível como uma variável local comum, acessível por @$posts@, no nosso caso. Caso você precise passar várias variáveis para a _view_, @Controller::set()@ suporta a notação de _arrays_:
 
-Você também pode notar que o modelo de dados já está disponível em @$this->Posts@. Através desse objeto, é possível acessar todas as propriedades do __model__ @Posts@ (que já deve existir em @app/models/posts.php@).
+pre. class PostsController extends AppController {
+    public function index() {
+        $this->set(array(
+            "posts" => $this->Posts->all(),
+            "search" => $this->param("search")
+        ));
+    }
+}
 
-A partir de agora, se a __view__ já tiver sido criada em @app/views/posts/index.phtm@, você já poderá ver o resultado em @/posts@. Como nenhuma __action__ é passada pela URL, o Spaghetti* supõe que esta seja @index@. Qualquer outra __action__ pode ser acessada através da estrutura @/controller/action@.
+Por padrão, o Spaghetti* carrega um _model_ com o mesmo nome do _controller_ sendo criado. Como você pode notar, o modelo @Posts@ já está disponível em @$this->Posts@ (isto é, se ele tiver sido criado em @/app/models/posts.php@). Através dele, você tem acesso a todas as "funcionalidades dos _models_":/docs/developer-guide/models.
 
-h2. Recebendo parâmetros
+A partir de agora, se uma _view_ já tiver sido criada em @/app/views/posts/index.htm.php@, você já poderá ver o resultado em @/posts@. Como dito acima, se nenhuma _action_ é passada pela URL, o Spaghetti* supõe que esta seja @index@. Qualquer outra _action_ pode ser acessada através da estrutura @/controller/action@.
 
-Diferente de páginas PHP comuns, os parâmetros no Spaghetti* não são passados através de __query strings__, como @?id=1&page=2@. Eles são passados como parte da URL, com cada parâmetro gerando uma URL diferente. O parâmetro mais usado é um número de identificação de um registro, para que ele possa ser identificado no banco de dados. Quando esse ID é passado como terceira parte da URL, ele já é identificado e enviado para o __controller__.
+h2(#controllers/parametros). Recebendo parâmetros
 
-Para que uma __action__ possa receber parâmetros, é necessário definí-los na função. Em uma ação de visualização de posts, pode-se fazer assim:
+Assim como qualquer outra página PHP comum, uma _action_ também pode receber parâmetros através de _query strings_. Entretanto, acessar uma página através de @/controller/action?id=3&page=2@ não é a nossa definição de URL amigável. No Spaghetti*, parâmetros são geralmente passados como sendo parte da URL. Usamos dois tipos de parâmetros: parâmetros nomeados, que funcionam de maneira semelhante a _query strings_, e parâmetros não-nomeados, que são enviados como parâmetros para o método do _controller_. Vamos ver um pouco mais sobre cada um.
+
+O tipo de parâmetro mais simples são os parâmetros não-nomeados. Eles são passados por uma URL com a estrutura @/controller/action/parâmetro1/parâmetro2/...@. Qualquer parte da URL após a definição do _controller_ e da _action_ são considerados parâmetros. Cada parâmetro não-nomeado é passado em ordem como parâmetro para o método correspondente à _action_.
+
+Para receber esses parâmetros, é necessário definir os parâmetros em sua _action_. Por exemplo, o parâmetro mais comum recebido por uma _action_ é o ID de um registro. Ele terá uma URL semelhante a @/controller/action/12@. Em nossa _action_, define-se o parâmetro comumente por @$id@:
 
 pre. public function view($id = null) {
-    $this->set("post", $this->Posts->findById($id));
+    $this->set("post", $this->Posts->firstById($id));
 }
 
-É recomendável que todo parâmetro tenha um valor padrão. Caso contrário, se esse parâmetro não for passado, o PHP disparará um erro, quebrando sua aplicação.
+p(note). Recomendamos que cada parâmetro tenha um valor padrão, e que esse seja checado por sua _action_. Caso contrário, ocorrerão erros do PHP, ou registros vazios sendo mostrados.
 
-Além do ID, é possível passar qualquer outro parâmetro, bastando adicionar mais partes na URL. Esse parâmetros são passados sequencialmente para a __action__. Para receber os parâmetro passados pela URL @/posts/view/1/hello-world@, nossa __action__ precisaria mudar para:
+Para receber o título de uma postagem como parâmetro, em vez de seu ID, é igualmente simples. Na verdade, bastaria você trocar @$id@ por @$slug@, apenas para não confundir o tipo de parâmetros sendo recebidos, e sua aplicação responderia a URLs como @/posts/view/titulo-de-um-post@.
 
-pre. public function view($id = null, $slug = "") {
-    $this->set("post", $this->Posts->find(array("id" => $id, "slug" => $slug)));
+Você pode receber quantos parâmetros nomeados quantos forem necessários. Não é necessário se preocupar com parâmetros extra, caso hajam mais parâmetros recebidos pela URL do que aqueles definidos no método, eles apenas serão ignorados. Caso hajam menos parâmetros recebidos do que aqueles definidos no método, dependerá de seus valores padrão, e o tratamento que seu método dará a eles.
+
+Quando faz mais sentido utilizar nomes para alguns parâmetros, o Spaghetti* provê os parâmetros nomeados. Eles funcionam tal qual _query strings_, embora fiquem muito mais amigáveis na URL. A forma de um parâmetro nomeado em uma URL é @/controller/action/param:value/param2:value@. Para recebê-los em sua _action_, é necessário usar o método @Controller::param()@ com o nome do parâmetro a ser retornado.
+
+pre. public function view() {
+    $id = $this->param("id");
+    $this->set("post", $this->Posts->firstById($id));
 }
 
-p(note). **Nota**: mesmo quando não estiver presente na URL, o ID é passado como um valor nulo para a __action__. Caso você esteja usando parâmetros textuais, é necessário definir o primeiro parâmetro mesmo assim.
+O principal uso desse tipo de parâmetros é quando usamos paginação ou ordenação de registros. Por exemplo, para acessar a segunda página de uma listagem de _posts_ ordenados por data de criação, acessaríamos a URL @/posts/index/page:2/order:created/direction:desc@.
 
-h2. Recebendo Dados do Usuário
+h2(#controllers/dados). Recebendo Dados do Usuário
 
 Além de receber parâmetros como ID, também é necessário receber os dados enviados pelo usuário através do método POST. Assim que o usuário envia uma requisição a partir de um formulário, todos os dados de @$_POST@ ficam disponíveis através da variável @Controller::data@.
 
