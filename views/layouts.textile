@@ -1,12 +1,12 @@
-p(highlight). Os __layouts__ fazem parte da camada de View da sua aplicação. Geralmente compõem toda a parte apresentacional que envolve uma __view__. Em um __layout__ você geralmente inclui sua marca, os menus de navegação, rodapé, entre outros.
+Os _layouts_ fazem parte da camada de _view_ da sua aplicação. Geralmente compõem toda a parte apresentacional que envolve uma _view_. É nos _layouts_ onde você inclui as partes fixas da apresentação de sua aplicação, geralmente sua marca, os menus de navegação, rodapé, entre outros.
 
-Os __layouts__ possuem um comportamento bastante semelhante ao das outras __views__: são arquivos HTML(HyperText Markup Language) mas, se necessário, você pode usar estruturas simples de PHP, como laços de repetição. Contudo, eles não possuem um __controller__-pai, pois são compartilhados geralmente entre uma aplicação inteira.
+Os _layouts_ possuem um comportamento bastante semelhante ao das outras _views_: são arquivos HTML com pouca ou nenhuma lógica PHP embutida, geralmente apenas estruturas simples de PHP, como laços de repetição, assim como nas _views_. Contudo, eles não estão vinculados a um _controller_ assim como as _views_, pois são compartilhados entre boa parte de sua apliação.
 
-O arquivo de __layout__ padrão da sua aplicação Spaghetti* é o arquivo @app/layouts/default.phtm@, mas você pode criar quantos __layouts__ diferentes você achar necessário.
+O arquivo de _layout_ padrão da sua aplicação Spaghetti* é o arquivo @/app/layouts/default.htm.php@, mas você pode criar quantos _layouts_ diferentes você achar necessário, e dar o nome que você quiser a eles.
 
-h2. Recebendo o conteúdo de uma __view__
+h2(#layouts/conteudo). Recebendo o conteúdo de uma _view_
 
-Se você sobrescrever o __layout__ padrão, montando uma estrutura semelhante à  seguinte, por exemplo:
+Você pode sobrescrever o layout padrão, montado uma estrutura de HTML simples, como a mostrada abaixo.
 
 pre. <html>
 <head>
@@ -17,7 +17,7 @@ pre. <html>
 </body>
 </html>
 
-Você, no exemplo acima, terá uma página apenas com um cabeçalho "Welcome to My Page", porém perceberá que o conteúdo da __view__ que você pretendia exibir não aparece neste documento HTML. Acontece que você precisa incluir uma variável convencionada chamada @$content_for_layout@ no local onde você deseja exibir o conteúdo de sua __view__ dentro deste __layout__, conforme o exemplo que segue:
+No exemplo acima, você terá uma página apenas com um cabeçalho "Welcome to My Page". Não importa se você está acessando uma _view_ que possui conteúdo, o _layout_ acima apenas mostrará o código que você digitou. É necessário *injetar* o conteúdo de uma _view_ no _layout_ para que esse possa ser mostrado. Para isso, você precisa imprimir a variável de instância @View::$contentForLayout@, que contém tudo o que foi gerado por suas _views_ na página em questão.
 
 pre. <html>
 <head>
@@ -25,52 +25,54 @@ pre. <html>
 </head>
 <body>
      <h1>Welcome to My Page</h1>
-     <?php echo $content_for_layout; ?>
+     <?php echo $this->contentForLayout ?>
 </body>
 </html>
 
-No exemplo acima, portanto, além do cabeçalho "Welcome to My Page", o conteúdo da __view__ solicitada será impresso logo em seguida.
+No exemplo acima, portanto, além do cabeçalho "Welcome to My Page", o conteúdo da _view_ solicitada será impresso logo em seguida.
 
-h2. Criando __layouts__ e escolhendo qual utilizar
+h2(#layouts/escolhendo). Criando _layouts_ e escolhendo qual utilizar
 
-Se você possuir uma página de __login__ em seu sistema, provavelmente optará por escrever um __layout__ próprio para esta página, livre dos elementos de navegação presentes em todo o restante do sistema. Para tal, você precisa criar um novo __layout__ na pasta @app/layouts/@ com o nome do arquivo que você desejar.
+Se você possuir uma página de _login_ em seu sistema, provavelmente optará por escrever um _layout_ próprio para esta página, livre dos elementos de navegação presentes em todo o restante do sistema. Para tal, você precisa criar um novo _layout_ na pasta @/app/layouts/@ com o nome do arquivo que você desejar.
 
-Então, deve entrar no __controller__ onde deseja alterar o __layout__, e incluir em seu __controller__ a seguinte atribuição:
+Então, você precisa alterar o _controller_ onde deseja trocar o _layout_ a ser mostrado, e definir a variável @Controller::$layout@, como "já explicado":/docs/developer-guide/controllers#controllers/layouts.
 
 pre. public $layout = "login";
 
-No exemplo acima, quando alguma __action__ do __controller__ onde a variável @$layout@ foi atribuída for chamada, o Spaghetti* procurará pelo arquivo @login.phtm@ na pasta @app/layouts/@. Você pode também definir um __layout__ específico para uma __action__, sem precisar afetar todas as outras __actions__ de um mesmo __controller__. Para tal, adicione a seguinte atribuição dentro da __action desejada:
+Com o exemplo acima, quando alguma _action_ do _controller_ onde a variável @Controller::$layout@ foi definida for chamada, o Spaghetti* procurará pelo arquivo @/app/layouts/login.htm.php@, e o mostrará envolvendo a _view_ correspondente à _action_.
 
-pre. $this->layout = "login";
+Você pode também definir um _layout_ específico para uma _action_, sem precisar afetar todas as outras _actions_ de um mesmo _controller_. Para tal, basta definir @Controller::$layout@ dentro da _action_ desejada.
 
-Neste caso, apenas a __action__ onde a atribuição acima foi feita é que será afetada pelo __layout__ escolhido, neste caso @app/layouts/login.phtm@.
+pre. public function login() {
+     $this->layout = "login";
+}
 
-h3. Alterando o __layout__ padrão da aplicação
+Neste caso, apenas a _action_ @login@ onde a atribuição acima foi feita é que será afetada pelo _layout_ escolhido.
 
-Conforme dito anteriormente, o __layout__ padrão da sua aplicação é @app/layouts/default.phtm@. Porém, caso prefira utilizar outro arquivo, pode alterar o __layout__ padrão definindo-o no @AppController@ de sua aplicação, que encontra-se em @app/controllers/app_controller.php@, adicionando a seguinte atribuição à  classe @AppController@:
+h3. Alterando o _layout_ padrão da aplicação
+
+Conforme dito anteriormente, o _layout_ padrão definido pelo Spaghetti* é @/app/layouts/default.htm.php@. Porém, caso prefira utilizar outro arquivo, você pode alterar o _layout_ padrão definindo-o no @AppController@ de sua aplicação, conforme explicado em "_AppController_":/docs/developer-guide/controllers#controllers/app-controller:
 
 pre. <?php
 class AppController extends Controller {
-     public $layout = "login";
+     public $layout = "my_layout";
 }
 ?>
 
-Neste caso, a aplicação toda será afetada e o __layout__ será @login.phtm@.
+A partir disso, toda sua aplicação passará a usar o _layout_ @my_layout@, a menos que esse seja sobrescrito por um _controller_ ou _action_ onde se faça necessário.
 
-h2. Usando __helpers__ nos __layouts__
+h2(#layouts/page-title). Definindo um título para a página
 
-Você pode utilizar todos os __helpers__ disponíveis para suas __views__ em seus __layouts__, contanto que estes __helpers__ tenham sido definidos dentro do __controller__ atual. Para evitar que algum __helper__ não seja incluído por acidente, é uma boa dica carregar os __helpers__ de sua aplicação no @AppController@, ao invés de carregá-lo em cada __controller__ que criar.
+A maneira como as _views_ do Spaghetti* são estruturadas permite que algumas técnicas interessantes sejam utilizadas. Definir o conteúdo de uma _tag_ @<title>@, dentro do _layout_, a partir de um título qualquer dentro de uma _view_ é uma delas.
 
-h2. Definindo um título para a página
+Como internamente o Spaghetti* gera primeiro o conteúdo da _view_ para só depois injetá-la dentro de um _layout_ (embora em uma primeira observação possa parecer o contrário), qualquer variável definida na _view_ também estará disponível para o _layout_, já que ambos compartilham a mesma instância de @View@. Com isso, podemos definir uma variável @View::$pageTitle@ dentro da _view_, e ela estará disponível para todo o _layout_, _elements_ e _helpers_.
 
-Há uma maneira de definir o conteúdo da __tag__ @<title>@ de maneira a não criar código com gambiarras. De modo semelhante à  variável @$content_for_layout@, há uma variável chamada @$this->pageTitle@, definida dentro de um __controller__ ou __action__ (à  sua escolha), onde você pode especificar o conteúdo da __tag__ @<title>@ que será exibido em qualquer lugar do documento HTML.
+Suponha que, em uma _view_ qualquer, você defina o título da página, e ele também deve aparecer em @<title>@. Usando a idéia de @View::$pageTitle@, podemos imprimir esse título ao mesmo tempo em que o atribuímos à variável:
 
-Para exibir o conteúdo da variável @$this->pageTitle@ em seu __layout__, escreva seu conteúdo dentro da __tag__ @<title>@, como no exemplo:
+pre. <h1><?php echo $this->pageTitle = "Título da Página" ?></h1>
 
-pre. <title><?php echo $this->pageTitle; ?></title>
+Após isso, basta modificar seu _layout_ para que adote @View::$pageTitle@ como título da página:
 
-E para definir o conteúdo da variável @$this->pageTitle@, faça uma atribuição normal dentro do __controller__ ou __action__ desejado, como nos respectivos exemplos que seguem:
+pre. <title><?php echo $this->pageTitle ?></title>
 
-pre. public $pageTitle = "Page Title Goes Here";
-
-pre. $this->pageTitle = "Page Title Goes Here";
+Além de definir o título da página, essa técnica pode ser usada para várias outras propósitos. Um deles, usado internamente pelo @HtmlHelper@, é imprimir _tags_ de estilo e _script_ de maneira não-inline, ou seja, embora a chamada a esses elementos seja feita pela _view_, eles são impressos dentro de @<header>@, no _layout_, através de @View::$stylesForLayout@ e @View::$scriptsForLayout@, como você pode descobrir na documentação sobre o "_HtmlHelper_":/docs/developer-guide/helpers/html-helper.
