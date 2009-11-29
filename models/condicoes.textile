@@ -1,37 +1,53 @@
-p(highlight). Arrays simples não dão conta de suas necessidades de SQL? Tudo bem, o Spaghetti* ainda lhe dá mais poder na hora de gerenciar suas consultas.
+Com o Spaghetti*, a escrita de consultas SQL é simplesmente desnecessária na maioria dos casos mais simples. A menos que você precise se preocupar com performance ou com consultas realmente complicadas, o Spaghetti* oferece bastante flexibilidade e simplicidade com a sintaxe de _arrays_.
 
-Com o Spaghetti*, a escrita de consultas SQL é tão rara que você dificilmente se deparará com elas, a menos em casos bem específicos. Com o uso de arrays, é possível criar condições facilmente, de leitura e manutenção extremamente simples.
+Basicamente, um _array_ de condições contém pares de chaves e valores definindo cada declaração. A condição abaixo, por exemplo, encontrará registros em que @title@ é igual a @Hello World@.
 
-Basicamente, um array de condições contém pares de chaves e valores definindo cada declaração. A condição abaixo, por exemplo, encontrará registros em que @title@ é igual a Hello World.
+pre. $conditions = array(
+	"title" => "Hello World"
+);
 
-pre. $conditions = array("title" => "Hello World");
+É tão simples que você esquecerá que um dia precisou escrever SQL. Embora o mecanismo seja simples, é possível utilizar muitas das funcionalides do SQL. Por exemplo, para adicionar mais declarações, basta adicionar mais itens ao _array_.
 
-É tão simples que você esquecerá que um dia precisou escrever SQL. Mas isso não é tudo, é possível mais! Para adicionar outras declarações à  condição, basta adicionar outro item ao array.
+pre. $conditions = array(
+	"id" => "3",
+	"title" => "Hello World"
+);
 
-pre. $conditions = array("id" => "3", "title" => "Hello World");
+Agora vamos a outros tipos de comparações. E se você estiver procurando um registro no qual o título *não* seja @Hello World@?
 
-Agora vamos a outros tipos de comparações. E se você estiver procurando um registro no qual o título NÃO seja Hello World?
+pre. $conditions = array(
+	"title <>" => "Hello World"
+);
 
-pre. $conditions = array("title <>" => "Hello World");
-
-Usando o operador SQL @<>@, o Spaghetti* encontrará registros em que o título seja diferente de Hello World. Além desse operador, você pode usar qualquer outro operador SQL válido, como @>@, @<@ e @LIKE@, e o Spaghetti* o reconhecerá e montará a consulta.
+Usando o operador SQL @<>@ ou @!=@, o Spaghetti* encontrará registros em que o título seja diferente de @Hello World@. Além desses operadores, você pode usar qualquer outro operador SQL válido, como @>@, @<@, @LIKE@ ou @REGEXP@, e o Spaghetti* o reconhecerá e montará a consulta corretamente.
 
 p(note). Para que o operador SQL seja reconhecido como tal, é necessário que ele esteja separado do nome do campo por um espaço.
 
 Além de comparações com um valor, também é possível usar comparações com um conjunto de valores, como em uma consulta @IN@:
 
-pre. $conditions = array("title" => array("Primeiro Post", "Segundo Post", "Terceiro Post"));
+pre. $conditions = array(
+	"title" => array("Primeiro Post", "Segundo Post", "Terceiro Post")
+);
 
 Esse mesmo princípio funciona com diferentes campos em uma mesma condição @OR@:
 
-pre. $conditions = array(array("id" => 3, "title" => "Hello World"));
+pre. $conditions = array(
+	"or" => array(
+		"id" => 3,
+		"title" => "Hello World"
+	)
+);
+
+Assim como @or@, outros operadores lógicos são aceitos, como @or not@, @not@, @and@, @and not@, @xor@, @||@ e @&&@.
 
 Consultas @BETWEEN@ também são criadas facilmente, basta adicionar o operador @BETWEEN@ juntamente com o nome do campo.
 
-pre. $conditions = array("id BETWEEN" => array(1, 15));
+pre. $conditions = array(
+	"id BETWEEN" => array(1, 15)
+);
 
 Embora o Spaghetti* cuide do trabalho sujo para você, algumas vezes é necessário sujar as mãos e escrever SQL diretamente. Para isso, você só precisa passar uma string como parâmetro.
 
 pre. $conditions = "id = 1 AND title = 'Hello World'";
 
-p(note). **Nota**: em consultas manuais, os valores não são escapados pelo Spaghetti*. Nunca confie em dados vindos do usuário, e sempre use @Model::escape()@ para fazer o escape de valores.
+p(note). *Nota*: em consultas manuais, os valores não são escapados pelo Spaghetti*. Nunca confie em dados vindos do usuário, e sempre faça o escape de valores.
