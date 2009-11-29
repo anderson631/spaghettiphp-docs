@@ -1,30 +1,26 @@
-p(highlight). É nos __controllers__ onde tudo acontece. Aqui você começa a programar de verdade, e a usar de todo o poder do Spaghetti*.
+No Spaghetti*, os _controllers_ receberão as requisições do usuário, farão algum processamento, farão contato com _models_, enviando os dados do usuário ou recebendo dados a serem mostrados em "_views_":/docs/developer-guide/views. São os _controllers_ os responsáveis por juntar as partes de lógica de negócio e a visualização de sua aplicação.
 
-Os __controllers__ trabalham com toda a lógica da aplicação. Tarefas como o processamento de dados vindos do usuário, a busca de registros no banco de dados através dos __models__ e a passagem dos dados para as __views__.
+h2(#controllers/criando). Criando _Controllers_
 
-Geralmente, __controllers__ são associados a um único modelo. Para facilitar seu trabalho, o Spaghetti* já associa por padrão seu __controller__ com um __model__ de mesmo nome, sem necessitar de nenhuma configuração.
-
-h2. Criando __Controllers__
-
-Para criarmos um controller, é preciso definir a classe @<nome>Controller@, e salvá-la em @app/controllers/<nome>_controller.php@. Também é necessário estender a classe @AppController@, para que todos os métodos necessários sejam herdados, e sua aplicação funcione corretamente.
+Para criarmos um controller, é preciso definir a classe @<nome>Controller@, e salvá-la em @/app/controllers/<nome>_controller.php@. Também é necessário estender a classe @AppController@, para que todos os métodos necessários ao seu _controller_ sejam herdados das classes básicas do Spaghetti*, e assim sua aplicação funcionará corretamente.
 
 pre. class PostsController extends AppController { }
 
-A partir de agora, a URL @/posts@ já está disponível, embora retorne um erro dizendo que a @action@ ainda não existe. Precisamos resolver isso!
+A partir de agora, a URL @/posts@ já está disponível a partir da raíz de sua aplicação, embora o Spaghetti* ainda retorne um erro dizendo que uma @action@ ainda não existe. Precisamos resolver isso!
 
-h2. Criando __Actions__
+h2(#controllers/actions). Criando _Actions_
 
-__Actions__ nada mais são do que métodos dentro de uma classe de __controller__. Cada __action__ corresponde a uma ação diferente de sua aplicação. Ações podem ser o envio de um e-mail, o cadastro de um usuário, a postagem de um artigo, entre qualquer outra coisa.
+_Actions_ nada mais são do que métodos dentro de uma classe de _controller_. Cada _action_ corresponde a uma ação diferente de sua aplicação e, consequentemente, uma nova URL. Ações podem ser o envio de um e-mail, o cadastro de um usuário, a postagem de um artigo, a visualização de um perfil, além de qualquer outra ação necessária.
 
-Para que sua aplicação funcione, é necessária a criação de __actions__ e suas respectivas __views__. Vamos criar uma __action__ simples, para gerar uma lista de posts:
+Para que sua aplicação funcione, é necessária a criação de _actions_ e suas respectivas _views_. Vamos criar uma _action_ simples, para gerar uma lista de posts. Essa _action_ estará acessível através de @/posts/index@, ou apenas @/posts@, já que o Spaghetti* subentende que, quando uma _action_ não é definida, ela é considerada como @index@.
 
 pre. class PostsController extends AppController {
     public function index() {
-        $this->set("posts", $this->Posts->findAll());
+        $this->set("posts", $this->Posts->all());
     }
 }
 
-A primeira coisa que devemos saber para podermos interagir entre __controllers__ e __views__ é como se faz a passagem de variáveis. Para isso, usa-se o método @Controller::set@, passando como parâmetros o nome da variável e seu respectivo valor. Dentro da __view__, essa variável estará disponível como uma variável local comum, acessível por @$posts@, no nosso caso.
+A primeira coisa que devemos saber para podermos interagir entre _controllers_ e _views_ é como se faz a passagem de variáveis. Como variáveis locais perderiam-se no caminho, usa-se o método @Controller::set()@, passando como parâmetros o nome da variável e seu respectivo valor. Dentro da _view_, essa variável estará disponível como uma variável local comum, acessível por @$posts@, no nosso caso.
 
 Você também pode notar que o modelo de dados já está disponível em @$this->Posts@. Através desse objeto, é possível acessar todas as propriedades do __model__ @Posts@ (que já deve existir em @app/models/posts.php@).
 
