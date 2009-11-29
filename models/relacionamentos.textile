@@ -1,33 +1,30 @@
-p(highlight). Os relacionamentos entre modelos são uma das características mais poderosas do Spaghetti*. Através deles, é possível mapear as associações entre tabelas, tornando mais fácil o trabalho com dados relacionados.
-
 A necessidade de relacionamentos é suficientemente óbvia, e naturalmente definida. Por exemplo, uma postagem em um blog pertence a uma categoria, enquanto esse mesmo post possui vários comentários. Através dessa definição, é possível acessar registros relacionados entre si, retornando-os em apenas uma consulta.
 
-h2. Tipos de Relacionamentos
+h2(#relacionamentos/tipos). Tipos de Relacionamentos
 
-Até a versão atual, o Spaghetti* trabalha com 3 tipos diferentes de associações: um para um, um para muitos e muitos para um.
+Até a versão atual, o Spaghetti* trabalha com 3 tipos diferentes de associações:
 
-|_. Tipo de Relacionamento |_. Relacionamento |_. Exemplos |
-|_. hasOne | Um para um | Um usuário possui um perfil |
-|_. hasMany | Um para muitos | Um usuário possui vários posts |
-|_. belongsTo | Muitos para um | Um usuário pertence a um grupo de usuários |
+* @hasOne@ funciona como um relacionamento um para um. Por exemplo, um usuário possui apenas um perfil.
+* @hasMany@ funciona como um relacionamento um para muitos, como um usuário que possui várias postagens.
+* @belongsTo@ funciona como um relacionamento muitos para um. Por exemplo, um usuário pertence a um grupo de usuários ou uma postagem pertence a um usuário.
 
-Para que os relacionamentos funcionem corretamente é preciso que, em uma das duas tabelas, exista um campo de chave estrangeira. Suponha que exista um modelo @Posts@ e um modelo @Usuarios@, e que vários posts pertençam a um usuário. Nesse caso, é necessário que na tabela @posts@ exista um campo @users_id@ para servir como chave estrangeira.
+Para que os relacionamentos funcionem corretamente é preciso que, em uma das duas tabelas, exista um campo de chave estrangeira. Suponha que exista um modelo @Posts@ e um modelo @Users@, e que vários posts pertençam a um usuário. Nesse caso, é necessário que na tabela @posts@ exista um campo @users_id@ para servir como chave estrangeira.
 
-h3. @hasOne@
+h2(#relacionamentos/hasOne). _hasOne_
 
-Uma associação @hasOne@ existe quando um registro pode ter *apenas um* registro correspondente na tabela relacionada. Esse tipo de relacionamento acontece, principalmente, entre tabelas de usuários e tabelas de perfis.
+Uma associação @hasOne@ existe quando um registro pode ter *apenas um* registro correspondente na tabela relacionada. Esse tipo de relacionamento acontece entre tabelas de usuários e tabelas de perfis, por exemplo.
 
-Para definir o relacionamento um para um em um modelo, é preciso definir a variável @hasOne@, com um array contendo todos os outros modelos relacionados:
+Para definir o relacionamento um para um em um modelo, é preciso definir a variável @hasOne@, com um _array_ contendo os modelos relacionados:
 
 pre. class Users extends AppModel {
     public $hasOne = array("Profiles");
 }
 
-p(note). **Nota**: Para relacionamentos @hasOne@, uma das tabelas deve ter a chave estrangeira correspondente. Em nosso caso, @Profiles@ deveria possuir o campo @users_id@.
+p(note). *Nota*: Em um relacionamento @hasOne@, o modelo sendo relacionado (como @Profiles@, no nosso caso) precisa ter uma chave estrangeira correspondente. O relacionamento contrário, de @Users@ para @Posts@, deverá ser @belongsTo@.
 
-Através desse relacionamento, é possível retornar todas as informações de um usuário, com apenas uma chamada ao método @Users::findAll()@, por exemplo.
+Através desse relacionamento, é possível retornar todas as informações de um usuário, com apenas uma chamada ao método @Users::all()@, por exemplo.
 
-pre. $this->Users->findAll();
+pre. $this->Users->all();
 
 Através da consulta acima, é retornado um array com a seguinte estrutura:
 
@@ -71,7 +68,7 @@ pre. Array
         )
 )
 
-h3. @hasMany@
+h2(#relacionamentos/hasMany). _hasMany_
 
 Um relacionamento um para muitos, assim como seu inverso, é um dos mais comuns. Ele acontece quando um registro em determinada tabela possui mais de um registro correspondente em outra tabela. Por exemplo, um usuário pode ter vários posts, ou um post pode ter vários comentários.
 
@@ -81,11 +78,13 @@ pre. class Users extends AppModel {
     public $hasMany = array("Posts");
 }
 
-Assim como em @hasOne@, também é possível acessar os registros correspondentes através de métodos como @Model::findAll()@. Entretanto, por padrão o Spaghetti* retorna apenas os dados de relacionamentos @belongsTo@ e @hasOne@, para evitar a sobrecarga de seu banco de dados. Para retornar registros de @hasMany@, é necessário passar o parâmetro @$recursion@:
+Assim como em @hasOne@, também é possível acessar os registros correspondentes através de métodos como @Model::all()@. Entretanto, por padrão o Spaghetti* retorna apenas os dados de relacionamentos @belongsTo@ e @hasOne@, para evitar a sobrecarga de seu banco de dados. Para retornar registros de @hasMany@, é necessário definir um "parâmetro de recursão":#relacionamentos/recursao, @$recursion@:
 
-pre. $this->Users->findAll(array(), null, null, 1);
+pre. $this->Users->all(array(
+    "recursion" => 1
+));
 
-O array retornado é apenas ligeiramente diferente do retornado por @hasOne@:
+O array retornado é apenas ligeiramente diferente do retornado por @hasOne@, contendo vários itens em @posts@ em vez de apenas um como no relacionamento anterior:
 
 pre. Array
 (
@@ -127,9 +126,9 @@ pre. Array
         )
 )
 
-p(note). **Nota**: nesse caso, a chave estrangeira deve estar presente apenas no modelo relacionado, e não naquele em que se descreve o relacionamento.
+p(note). *Nota*: nesse caso, a chave estrangeira deve estar presente apenas no modelo relacionado, e não naquele em que se descreve o relacionamento.
 
-h3. @belongsTo@
+h2(#relacionamentos/belongsTo). _belongsTo_
 
 Relacionamentos muitos para um são exatamento o inverso de relacionamentos um para muitos. Embora não seja necessário, acontece em qualquer lado oposto de um relacionamento @hasMany@. Acontece quando um post pertence a um usuário, ou quando um post pertence a uma categoria.
 
@@ -139,11 +138,13 @@ pre. class Comments extends AppModel {
     public $belongsTo = array("Posts");
 }
 
-p(note). **Nota**: em relacionamentos @belongsTo@, a chave estrangeira deve estar presente apenas na tabela em que se descreve o relacionamento, e não no modelo relacionado, justamente o contrário de relacionamentos @hasMany@
+p(note). *Nota*: em relacionamentos @belongsTo@, a chave estrangeira deve estar presente apenas na tabela em que se descreve o relacionamento, e não no modelo relacionado, justamente o contrário de relacionamentos @hasMany@.
 
-h2. Definindo Recursão
+p(note). Não é necessário definir um relaciomento @belongsTo@ para cada relacionamento @hasMany@ (e vice-versa). Você precisa definí-los apenas quando necessário, evitando assim a sobrecarga do banco de dados por causa de muitas chamadas recursivas.
 
-O Spaghetti* define uma recursão padrão para seus modelos, para que você não precise se preocupar com sobrecarga em seu servidor de banco de dados. Entretanto, muitas vezes é necessário definir uma recursão maior, ou mesmo menor. É possível modificar essa recursão padrão através da variável @$recursion@, definida na classe dos modelos de dados.
+h2(#relacionamentos/recursao). Definindo Recursão
+
+O Spaghetti* define uma recursão padrão para seus modelos, para que você não precise se preocupar com sobrecarga em seu servidor de banco de dados. Por padrão, esse valor de recursão retorna apenas relacionamentos @belongsTo@ e @hasOne@. Entretanto, muitas vezes é necessário definir uma recursão maior, ou mesmo menor. É possível modificar essa recursão padrão através da variável @Model::$recursion@, definida na classe dos modelos de dados.
 
 pre. class Users extends AppModel {
     public $recursion = 1;
@@ -151,7 +152,7 @@ pre. class Users extends AppModel {
 
 Caso esse número de recursões seja compartilhado entre todos os modelos de sua aplicação, você pode criar o modelo @AppModel@ em @app/models/app.php@, e definir a mesma variável.
 
-pre. class AppModel extends Model { // aqui estendemos Model em vez de AppModel!
+pre. class AppModel extends Model {
     public $recursion = 1;
 }
 
@@ -161,22 +162,29 @@ O valor da recursão pode variar dependendo de sua necessidade. Os valores poss�
 |_. -1 | Nenhum registro relacionado é retornado. |
 |_. 0 | São retornados apenas os registros relacionados diretamente por @hasOne@ e @belongsTo@ |
 |_. 1 | São retornados todos os registros relacionados diretamente pelo modelo, incluindo @hasMany@ |
-|_. n > 2 | Além dos registros relacionados diretamente, retorna __n__ níveis de recursão |
+|_. @n@ > 2 | Além dos registros relacionados diretamente, retorna @n@ níveis de recursão |
 
 Não é necessário definir níveis de recursão maiores do que o necessário. Isso pode diminuir a velocidade de sua aplicação, assim como causar sobrecarga em seu servidor. Use com responsabilidade!
 
-h2. Definindo atributos para relacionamentos
+Como explicado em "Parâmetros padrão":/docs/developer-guide/models#model/parametros, @recursion@ pode ser sobrescrito com a passagem explícita do parâmetro pelo _array_ de opções de uma consulta:
+
+pre. $this->Users->all(array(
+    "recursion" => 1
+));
+
+h2(#relacionamentos/atributos). Definindo atributos para relacionamentos
 
 O Spaghetti*, além de lhe prover várias convenções, também consegue trabalhar muito bem sobre configuração. Você pode ter várias opções para definir melhor seus relacionamentos.
 
-Para definir as opções de relacionamentos, é necessário modificar um pouco como os relacionamentos são definidos. Em vez de apenas um array numerado, é necessário nomeá-lo, da seguinte maneira:
+Para definir as opções de relacionamentos, é necessário modificar um pouco como os relacionamentos são definidos. Em vez de apenas um _array_ numerado, é necessário nomeá-lo, da seguinte maneira:
 
-pre. public $hasMany = array("assocName" => array("option" => "value"));
+pre. public $hasMany = array(
+    "assocName" => array("option" => "value"),
+    "assocName2" => array("option" => "value")
+);
 
-==
-<ul>
-<li><code>className</code> determina o nome da classe do modelo relacionado. Assim, é possível definir qualquer nome para a associação, sem que a associação pare de funcionar.</li>
-<li><code>foreignKey</code> determina o nome da chave estrangeira. Como o Spaghetti* ainda não conta com singularização/pluralização, você pode definir manualmente um nome no singular, ou mesmo qualquer outro nome, para a chave.</li>
-<li><code>conditions</code> é um array ou string de condições. Somente os registros que obedeçam a essa condição serão adicionados �  associação.</li>
-</ul>
-==
+Os parâmetros disponíveis são:
+
+* @foreignKey@ determina o nome da chave estrangeira. Por padrão, o Spaghetti* usa o valor correspondente ao nome do modelo mais @_id@. Caso você utilize nomes diferentes desse padrão, como chaves no singular, é necessário definí-la manualmente através desse atributo.
+* @conditions@ é um _array_ ou _string_ de condições. Somente registros que obedeçam a essas condições serão adicionados à associação.
+* @className@ define o nome da classe do modelo relacionado. Isso permite fazer várias associações com um mesmo modelo através de vários nomes e condições diferentes.
