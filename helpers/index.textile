@@ -1,43 +1,25 @@
-p(highlight). __Helpers__ são classes semelhante aos "componentes":/components, porém são exclusivas para as __views__ e para a lógica presentacional compartilhada entre __views__, __layouts__ e __elements__. Nestas classes você encontra funções que tornam o seu desenvolvimento __client-side__ mais rápido e fácil.
+_Helpers_ são classes semelhante aos "componentes":/docs/developer-guide/components, porém são exclusivas para as _views_ e para a lógica presentacional compartilhada entre _views_, _layouts_ e _elements_. Nestas classes você encontra funções que tornam o seu desenvolvimento _client-side_ mais rápido e fácil.
 
-Dois __helpers__ vêm habilitados por padrão na instalação do Spaghetti*: um para  "HTML":/docs/html-helper e outro para "formulários":/docs/form-helper.
+Dois _helpers_ vêm habilitados por padrão na instalação do Spaghetti*: um para  "HTML":/docs/developer-guide/html-helper e outro para "formulários":/docs/developer-guide/form-helper.
 
-h2. Utilizando os __helpers__
+h2(#helpers/carregando). Utilizando _Helpers_
 
-Conforme dito acima, você só poderá usar as funções de um __helper__ dentro de uma __view__, __layout__ ou __element__. Para mais informações sobre como utilizar cada __helper__, consulte as documentações específicas ao lado.
+Para poder utilizar um _helper_, você precisa "habilitá-lo":/docs/developer-guide/controllers#controllers/models-helpers-components nos _controllers_ onde pretende utilizá-lo.
 
-h2. Criando seu próprio __helper__
+Depois de habilitar um novo _helper_, ele já vai estar disponível em suas _views_. Os _helpers_ ficam disponíveis em uma variável local com o mesmo nome do _helper_. Assim, @HtmlHelper@ fica disponível na _view_ como @$html@. Caso ocorra colisão no nome de variáveis, no caso de já existir uma variável com o nome do _helper_, o _helper_ ficará disponível através de seu nome mais @_helper@, como @$html_helper@.
 
-Para criar um __helper__, crie um arquivo @nome_do_helper_helper.php@ na pasta @app/helpers/@. Por exemplo, se fôssemos criar um __helper__ chamado Number, ele seria o arquivo @app/helpers/number_helper.php@, e dentro dele haveria a classe @NumberHelper@ que estende a classe @Helper@.
+h2(#helpers/criando). Criando seu próprios _helpers_
 
-p(note). Como os __helpers__ são específicos para as __views__, você não conseguirá ter acesso a modelos de dados de dentro deles.
+Para criar um _helper_, crie um arquivo @nome_helper.php@ na pasta @/app/helpers@. Por exemplo, se fôssemos criar um _helper_ chamado @Number@, para formatação de números, ele seria criado no arquivo @/app/helpers/number_helper.php@, e dentro dele haveria a classe @NumberHelper@, estendendo @Helper@.
 
-h3. Carregando um __helper__
+pre. class NumberHelper extends Helper { }
 
-Você precisa então chamar este __helper__ no __controller__ onde você pretende usá-lo. Caso queira usar um __helper__ com toda a aplicação, carregue-o dentro do AppController, localizado em @app/controllers/app_controller.php@, adicionando a seguinte variável de instância �  classe:
+Dentro dessa classe, você pode criar os métodos necessários para sua lógica de apresentação. Caso você vá retornar código HTML, você também pode estender @HtmlHelper@ em vez de apenas @Helper@, e usar os métodos que você precisar.
 
-pre. public $helpers = array("Number");
+Por convenção, os _helpers_ não devem *imprimir* código, apenas retorná-lo, para que a própria aplicação decida o que fazer com eles. Por convenção, o Spaghetti* também usa o método @Helper::output()@ para processar a saída de código. Por padrão, o método apenas retorna o que for passado a ele, mas em determinadas ocasiões pode ser necessário escapar a saída, ou algum outro processamento. Portanto, prefira usar @Helper::output()@ em vez de imprimir diretamente.
 
-Continuando no exemplo, neste caso carregaríamos no __controller__ o __helper__ Number. Porém é importante ressaltar que, definindo o __array__ com apenas Number, os outro __helpers__ embutidos no Spaghetti* não serão mais carregados, pois você está sobrescrendo a chamada padrão. Para continuar a carregar os __helpers__ padrão do Spaghetti, adicione a variável de classe desta maneira:
-
-pre. public $helpers  = array("Html", "Form", "Number");
-
-Agora seu __helper__ já está pronto para ser usado nas __views__ do seu __controller__ (ou da aplicação inteira, caso tenha incluído o __helper__ no AppController).
-
-h3. Usando o __helper__ na __view__
-
-Se o seu __helper__ se chamar Number, logo ele estará acessível em uma __view__ através da variável @$number@, como no exemplo abaixo:
-
-pre. <h1>My Blog</h1>
-<?php echo $number->ceil(2.0324); ?>
-
-A chamada acima procurará pelo __helper__ Number e pelo seu método @ceil()@, que pode ser escrito assim:
-
-pre. <?php class NumberHelper extends Helper {
-     public function ceil($number = null) {
-          $numeroArredondado = ceil($number);
-          $this->output($numeroArredondado);
+pre. class NumberHelper extends Helper {
+     public function format($number, $decimals) {
+          return $this->output(number_format($number, $decimals));
      }
-} ?>
-
-Repare que para passar a saída da função você utiliza o método @$this->output()@ passando como parâmetro o conteúdo que você deseja retornar.
+}
