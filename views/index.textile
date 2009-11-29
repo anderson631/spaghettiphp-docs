@@ -1,57 +1,37 @@
-p(highlight). E chegamos à  camada apresentacional do paradigma MVC(Model, View, Controller): as Views. Uma __view__ é, geralmente, um arquivo HTML com pouca ou nenhuma programação que serve para exibir na tela o conteúdo que você desejar para uma __action__.
+E chegamos à  camada apresentacional do paradigma MVC(Model, View, Controller): as _views_. Enquanto dentro dos _controllers_ e _models_ você desenvolve toda a lógica de programação do seu sistema, em uma _view_ você determina qual conteúdo será exibido em uma determinada _action_.
 
-Enquanto dentro de um __controller__ você desenvolve toda a lógica de programação do seu sistema, utilizando modelos de acesso a dados e outros componentes, em uma __view__ você determina qual conteúdo será exibido em uma determinada __action__.
+No geral, pouco código PHP é escrito dentro de uma _view_, apenas as estruturas básicas necessárias para manipular o conteúdo já mastigado que você deve enviar a partir do _controller_.
 
-No geral, pouco código PHP é escrito dentro de uma __view__, apenas as estruturas básicas necessárias para manipular o conteúdo já mastigado que você deve enviar a partir do __controller__. Existem quatro tipos básicos de __views__:
+Dentro do Spaghetti*, é possível utilizar dois tipos de _views_, dependendo de suas necessidades. São elas as _views_ estáticas e as _views_ dinâmicas, explicadas logo abaixo.
 
-==
-<ol>
-<li>Views estáticas</li>
-<li>Views dinâmicas</li>
-<li>Layouts</li>
-<li>Elements</li>
-</ol>
-==
+h2(#views/estaticas). _Views_ estáticas
 
-h2. Views estáticas
+As _views_ estáticas são o tipo de _view_ mais simples. Uma _view_ estática é equivalente a uma página HTML, não recebe nenhum tipo de informação de um _controller_. Logo, você pode criar _views_ estáticas sem precisar criar um _controller_ ou uma _action_ para elas. Por exemplo, se você quiser criar uma página "Sobre Nós", que em termos gerais não demanda nenhum tipo de programação, apenas HTML simples, não faz sentido criar um _controller_ @SobreNosController@.
 
-As __views__ estáticas são o tipo de __view__ mais simples. Uma __view__ estática não recebe nenhum tipo de informação de um __controller__, logo, você pode criar __views__ estáticas sem precisar criar um __controller__. Por exemplo, se você quiser criar uma página "Sobre Nós", que em termos gerais não demanda nenhum tipo de programação, apenas HTML simples, não faz sentido criar um __controller__ @SobreNosController@.
+Então, para que você consiga acessar esta página através da URL @/sobre-nos/@, por exemplo, você deve criar uma pasta @sobre_nos@ no diretório @/app/views/@, e dentro dela criar um arquivo @index.htm.php@.
 
-Então, para que você consiga acessar esta página através da URL(Universal Resource Locator) @/sobre-nos/@, por exemplo, você deve criar uma pasta @sobre-nos@ no diretório @app/views/@, e dentro dela criar um arquivo @index.phtm@. 
+p(note). Note que o Spaghetti* converte hifens para _underscores_ quando esses vem de uma URL.
 
-Você pode, seguindo os mesmos princípios de funcionamento dos __controllers__, criar sub-páginas estáticas. Se você quiser criar uma página no endereço @/sobre-nos/equipe@, deve criar dentro daquela mesma pasta @app/views/sobre-nos@ o arquivo @equipe.phtm@.
+Você pode, seguindo os mesmos princípios de funcionamento dos _controllers_, criar "sub-páginas" estáticas. Se você quiser criar uma página no endereço @/sobre-nos/equipe@, deve criar dentro daquela mesma pasta @app/views/sobre_nos@ o arquivo @equipe.htm.php@.
 
-p(note). *Nota:* o que faz uma __view__ ser estática é o fato de não possuir código PHP embutido. Porém, elas seguem exatamente as convenções das __views__ comuns, como a estrutura nos diretórios, extensão de arquivos, etc.
+p(note). *Nota:* o que faz uma _view_ ser estática é o fato de não possuir nehuma lógica por trás dela. Porém, elas seguem exatamente as convenções das _views_ comuns, como a estrutura nos diretórios, extensão de arquivos, etc.
 
-h2. Views dinâmicas
+h2(#views/dinamicas). _Views_ dinâmicas
 
-Ao contrário das __views__ estáticas, as dinâmicas são aquelas onde você utiliza código PHP em meio ao HTML. Desta maneira, torna-se *obrigatória* a presença de um __controller__. Como descreve o padrão MVC, a camada Controller é a responsável por manipular dados e pela lógica de programação, apenas passando para a camada View o conteúdo já digerido, pronto para ser apresentado na tela.
+Ao contrário das _views_ estáticas, _views_ dinâmicas são aquelas onde você utiliza código PHP em meio ao HTML, para injetar dados vindos de um _controller_. Desta maneira, a presença de um _controller_ é necessária. Como descreve o padrão MVC, a camada _Controller_ é a responsável por manipular dados, apenas passando para a camada View o conteúdo já digerido, pronto para ser apresentado na tela.
 
-Por isso, em uma __view__ dinâmica você irá, geralmente, receber apenas variáveis enviadas pelo seu __controller__ contendo __strings__ ou __arrays__, e tudo o que você precisará utilizar de código PHP dentro delas servirá para imprimir o conteúdo destas variáveis na tela. Desta maneira, em sua __view__ você utiliza apenas estruturas básicas do PHP, como @if@, @for@ e @foreach@, apenas com esta lógica de apresentação da página.
+Por isso, em uma _view_ dinâmica você irá, geralmente, receber apenas variáveis enviadas pelo seu _controller_ contendo _strings_ ou _arrays_, e tudo o que você precisará utilizar de código PHP dentro delas servirá para imprimir o conteúdo destas variáveis na tela. Desta maneira, em sua _view_ você utiliza apenas estruturas e funções básicas do PHP, como @if@, @for@ e @foreach@, e os "_helpers_":/docs/developer-guide/helpers providos pelo Spaghetti* ou criados por você.
 
-h3. Manipulando as variáveis enviadas pelo __controller__
+h3. Manipulando as variáveis enviadas pelo _controller_
 
-Você receberá variáveis vindas do __controller__ de maneira normal, como as variáveis padrão do PHP. Se, por exemplo, você definir uma variável no seu __controller__, conforme o exemplo:
+Você receberá variáveis vindas do _controller_ de maneira normal, como variáveis locais do PHP. Se, por exemplo, você definir uma variável no seu _controller_, conforme o exemplo:
 
-pre. $this->set("fruits", array("lemon","orange","apple","grape"));
+pre. $this->set("fruits", array("lemon", "orange", "apple", "grape"));
 
-Você então, em sua __view__, receberá uma variável @$fruits@, contendo exatamente o mesmo __array__ passado como segundo parâmetro do método @set@ do Controller. Se, por exemplo, quiser transformar este __array__ em uma lista não ordenada, pode utilizar a estrutura de controle @foreach@, de acordo com o exemplo abaixo:
+Você então, em sua _view_, receberá uma variável @$fruits@, contendo exatamente o mesmo _array_ passado como segundo parâmetro do método @Controller::set()@. Se, por exemplo, quiser transformar este _array_ em uma lista não ordenada, pode utilizar a estrutura de controle @foreach@, de acordo com o exemplo abaixo:
 
 pre. <ul>
 <?php foreach($fruits as $fruit): ?>
-     <li><?php echo $fruit; ?></li>
-<?php endforeach; ?>
+     <li><?php echo $fruit ?></li>
+<?php endforeach ?>
 </ul>
-
-
-h2. Layouts
-
-Os __layouts__ servem para englobar o conteúdo de uma __view__ - geralmente para adicionar a navegação geral do site, topo, menus e rodapé. 
-
-p(note). "Saiba mais sobre Layouts »":/docs/layouts
-
-h2. Elements
-
-Os __elements__, por sua vez, são __views__ que guardam trechos de código que você utiliza com freqüência em várias partes diferentes de sua aplicação, para que você possa utilizar o mesmo código várias vezes sem ter que reescrevê-lo e sem copiar e colar.
-
-p(note). "Saiba mais sobre Elements »":/docs/elements
