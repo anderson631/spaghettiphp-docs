@@ -286,5 +286,3 @@ class News extends AppModel {
 }
 
 p(note). *Nota*: em todas as buscas, os parâmetros padrão serão usados, a menos que sejam sobrescritos. Por exemplo, uma condição @approved = 1@ só não será usada caso seja sobrescrita por outra condição como @approved <> 1@.
-
-h2(#model/to-list). ToList
