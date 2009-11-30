@@ -1,4 +1,4 @@
-No Spaghetti*, os _controllers_ receberão as requisições do usuário, farão algum processamento, farão contato com _models_, enviando os dados do usuário ou recebendo dados a serem mostrados em "_views_":/docs/developer-guide/views. São os _controllers_ os responsáveis por juntar as partes de lógica de negócio e a visualização de sua aplicação.
+No Spaghetti*, os _controllers_ receberão as requisições do usuário, farão algum processamento, farão contato com "_models_":/docs/developer-guide/models/index, enviando os dados do usuário ou recebendo dados a serem mostrados em "_views_":/docs/developer-guide/views/index. São os _controllers_ os responsáveis por juntar as partes de lógica de negócio e a visualização de sua aplicação.
 
 h2(#controllers/criando). Criando _Controllers_
 
@@ -31,7 +31,7 @@ pre. class PostsController extends AppController {
     }
 }
 
-Por padrão, o Spaghetti* carrega um _model_ com o mesmo nome do _controller_ sendo criado. Como você pode notar, o modelo @Posts@ já está disponível em @$this->Posts@ (isto é, se ele tiver sido criado em @/app/models/posts.php@). Através dele, você tem acesso a todas as "funcionalidades dos _models_":/docs/developer-guide/models.
+Por padrão, o Spaghetti* carrega um _model_ com o mesmo nome do _controller_ sendo criado. Como você pode notar, o modelo @Posts@ já está disponível em @$this->Posts@ (isto é, se ele tiver sido criado em @/app/models/posts.php@). Através dele, você tem acesso a todas as "funcionalidades dos _models_":/docs/developer-guide/models/index.
 
 A partir de agora, se uma _view_ já tiver sido criada em @/app/views/posts/index.htm.php@, você já poderá ver o resultado em @/posts@. Como dito acima, se nenhuma _action_ é passada pela URL, o Spaghetti* supõe que esta seja @index@. Qualquer outra _action_ pode ser acessada através da estrutura @/controller/action@.
 
@@ -113,7 +113,7 @@ Por padrão, o Spaghetti* já inclui os _helpers_ @HtmlHelper@, @FormHelper@ e @
 
 h2(#controllers/layouts). Usando Layouts
 
-Fazendo o uso de "layouts":/docs/developer-guide/layouts, você não precisa escrever tanto código HTML, já que é possível gerar todo o esqueleto da página apenas uma vez. Por padrão, o Spaghetti* renderiza o layout @default@, que se encontra em @/app/layouts/default.htm.php@. Entretanto, é possível escolher qualquer outro layout disponível em sua aplicação através da variável @Controller::$layout@.
+Fazendo o uso de "layouts":/docs/developer-guide/views/layouts, você não precisa escrever tanto código HTML, já que é possível gerar todo o esqueleto da página apenas uma vez. Por padrão, o Spaghetti* renderiza o layout @default@, que se encontra em @/app/layouts/default.htm.php@. Entretanto, é possível escolher qualquer outro layout disponível em sua aplicação através da variável @Controller::$layout@.
 
 pre. class HomeController extends AppController {
     public $layout = "home";

@@ -166,7 +166,7 @@ O valor da recursão pode variar dependendo de sua necessidade. Os valores poss�
 
 Não é necessário definir níveis de recursão maiores do que o necessário. Isso pode diminuir a velocidade de sua aplicação, assim como causar sobrecarga em seu servidor. Use com responsabilidade!
 
-Como explicado em "Parâmetros padrão":/docs/developer-guide/models#model/parametros, @recursion@ pode ser sobrescrito com a passagem explícita do parâmetro pelo _array_ de opções de uma consulta:
+Como explicado em "Parâmetros padrão":/docs/developer-guide/models/index#model/parametros, @recursion@ pode ser sobrescrito com a passagem explícita do parâmetro pelo _array_ de opções de uma consulta:
 
 pre. $this->Users->all(array(
     "recursion" => 1

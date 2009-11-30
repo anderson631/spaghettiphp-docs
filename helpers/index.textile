@@ -1,6 +1,6 @@
-_Helpers_ são classes semelhante aos "componentes":/docs/developer-guide/components, porém são exclusivas para as _views_ e para a lógica presentacional compartilhada entre _views_, _layouts_ e _elements_. Nestas classes você encontra funções que tornam o seu desenvolvimento _client-side_ mais rápido e fácil.
+_Helpers_ são classes semelhante aos "componentes":/docs/developer-guide/components/index, porém são exclusivas para as _views_ e para a lógica presentacional compartilhada entre _views_, _layouts_ e _elements_. Nestas classes você encontra funções que tornam o seu desenvolvimento _client-side_ mais rápido e fácil.
 
-Dois _helpers_ vêm habilitados por padrão na instalação do Spaghetti*: um para  "HTML":/docs/developer-guide/html-helper e outro para "formulários":/docs/developer-guide/form-helper.
+Dois _helpers_ vêm habilitados por padrão na instalação do Spaghetti*: um para  "HTML":/docs/developer-guide/helpers/html-helper e outro para "formulários":/docs/developer-guide/helpers/form-helper.
 
 h2(#helpers/carregando). Utilizando _Helpers_
 

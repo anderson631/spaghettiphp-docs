@@ -20,7 +20,7 @@ h2(#views/dinamicas). _Views_ dinâmicas
 
 Ao contrário das _views_ estáticas, _views_ dinâmicas são aquelas onde você utiliza código PHP em meio ao HTML, para injetar dados vindos de um _controller_. Desta maneira, a presença de um _controller_ é necessária. Como descreve o padrão MVC, a camada _Controller_ é a responsável por manipular dados, apenas passando para a camada View o conteúdo já digerido, pronto para ser apresentado na tela.
 
-Por isso, em uma _view_ dinâmica você irá, geralmente, receber apenas variáveis enviadas pelo seu _controller_ contendo _strings_ ou _arrays_, e tudo o que você precisará utilizar de código PHP dentro delas servirá para imprimir o conteúdo destas variáveis na tela. Desta maneira, em sua _view_ você utiliza apenas estruturas e funções básicas do PHP, como @if@, @for@ e @foreach@, e os "_helpers_":/docs/developer-guide/helpers providos pelo Spaghetti* ou criados por você.
+Por isso, em uma _view_ dinâmica você irá, geralmente, receber apenas variáveis enviadas pelo seu _controller_ contendo _strings_ ou _arrays_, e tudo o que você precisará utilizar de código PHP dentro delas servirá para imprimir o conteúdo destas variáveis na tela. Desta maneira, em sua _view_ você utiliza apenas estruturas e funções básicas do PHP, como @if@, @for@ e @foreach@, e os "_helpers_":/docs/developer-guide/helpers/index providos pelo Spaghetti* ou criados por você.
 
 h3. Manipulando as variáveis enviadas pelo _controller_
 
