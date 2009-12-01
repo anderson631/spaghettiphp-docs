@@ -40,7 +40,7 @@ A classe @Helper@ permanece inalterada, mas temos algumas alterações envolvend
 
 Em @FormHelper@ as mudanças foram mais profundas. Toda a saída gerada por @FormHelper::input()@ está diferente, sendo algo parecido com o seguinte código:
 
-pre. <div class="input text">
+pre(.brush: xml). <div class="input text">
     <label for="FormText">Text</label>
 	<input type="text" name="text" id="FormText" />
 </div>
