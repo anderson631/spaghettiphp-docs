@@ -1,118 +1,37 @@
-p(highlight). O Form Helper é o __helper__ que torna a criação de formulários em HTML um pouco menos trabalhosa. Embora ainda esteja em um estágio inicial de desenvolvimento, já provém as funcionalidades básicas para agilizar a escrita de formulários.
+A criação de formulários costuma ser um pesadelo para vários desenvolvedores. Não pela dificuldade, mas sim pela quantidade de marcação que precisa ser gerada em alguns casos. O Spaghetti* já traz na instalação padrão um _helper_ para as principais tarefas relacionadas a formulários, o @FormHelper@.
 
-O __helper__ Form já vem instalado e habilitado por padrão em sua instalação do Spaghetti*. Portanto, a partir de qualquer __view__, pode acessar os métodos disponíveis através da variável @$form@.
+O @FormHelper@ gera vários tipos diferentes de campos para seus formulários, todos com uma marcação padronizada e facilmente estilizável por CSS. Em vez de você precisar criar vários elementos @<div>@, @<label>@ e tudo o mais, o _helper_ já fará tudo isso por você.
 
-h2. Criando um formulário novo
+h2(#form-helper/criando). Criando um formulário
 
-h3. @$form->create(@ string $action, array $attributes @)@
+Antes de começar a criar os campos de seu formulário é necessário criar a tag @<form>@, para que seu formulário possa ser submetido corretamente. Como o Spaghetti* precisa manipular o atributo @action@ de seu formulário para que a URL seja criada corretamente, usamos o método @FormHelper::create()@. Caso nenhum parâmetro seja passado para o método, será criado um formulário com o atributo @action@ apontando para a própria página em que o formulário foi criado. Para definir uma outra URL qualquer, é necessário passá-la como o primeiro parâmetro.
 
-|_. string $action | String opcional indicando a URL de ação do formulário |
-|_. array $attributes | Array opcional de atributos da tag @form@ |
+pre. echo $form->create("/users/login");
+// => <form action="/users/login" method="post">
 
-Se você utilizar o método @$form->create()@ sem passar qualquer parâmetro, a __tag__ padrão será criada, apontando a ação para a URL atual.
+Por padrão, o @HtmlHelper@ assume que seus formulários usarão @method=post@. Entretanto, nada impede que você use @method=get@. Você pode fazer essa alteração passando um segundo parâmetro, um _array_ de atributos para o formulário. Além dos métodos comuns, o Spaghetti* também suporta um método @file@, que gerará um formulário de envio de arquivos.
 
-pre. <?php echo $form->create(); ?>
-// Gerará o seguinte:
-// <form action="http://suaapp.com/url_atual_da_pagina" method="post">
+pre. echo $form->create("/photos/upload", array("method" => "file"));
+// => <form action="/photos/upload" method="post" enctype="multipart/form-data">
 
-h4. Especificando uma URL de ação para o formulário
+Assim como você precisa abrir o formulário, é necessário fechá-lo também. Você pode fazer isso através de @</form>@, ou através de @FormHelper::close()@. Sem receber nenhum parâmetro, a saída é o prório @</form>@, mas o _helper_ é capaz de um pouco mais que isso: você já pode gerar o botão de envio automaticamente.
 
-Para especificar a URL para onde o formulário deverá ser enviado, você precisa apenas passar esta URL como primeiro parâmetro do método @$form->create()@.
+Passando algum texto como primeiro parâmetro, @FormHelper@ criará uma tag @<button type="submit">@, com o texto do parâmetro como legenda do botão. Esse botão pode receber qualquer atributo, passando um _array_ contendo seus nomes e valores.
 
-pre. <?php echo $form->create("http://suaapp.com/enviar"); ?>
-// Gerará o seguinte:
-// <form action="http://suaapp.com/enviar" method="post">
+pre. echo $form->close("Enviar", array("class" => "send"));
+// => <button type="submit" class="send">Enviar</button>
 
-h4. Passando outros atributos para a __tag__ @form@
+Também existe um atributo especial, chamado @tag@. Ele permite que você use outros tipos de botão além do padrão @<button>@. Você pode usar @input@ para criar um @<input type="submit" />@ ou @image@ para criar um @<input type="image" />@.
 
-Caso você ainda precise passar outros atributos para a __tag__ de abertura do formulário, como por exemplo alterar o método de envio de @POST@ para @GET@, pode fazê-lo passando um __array__ de argumentos como segundo parâmetro do método @$form->create()@.
+pre.. echo $form->close("Enviar", array("tag" => "input"));
+// => <input type="submit" value="enviar" />
 
-pre. <?php echo $form->create(null, array("method"=>"get")); ?>
-// Gerará o seguinte:
-// <form action="http://suaapp.com/url_atual_da_pagina" method="get">
+echo $form->close("Enviar", array(
+	"tag" => "image",
+	"src" => "input.png")
+);
+// => <input type="image" src="/images/input.png" alt="Enviar" />
 
-h2. Adicionando campos ao seu formulário
+h2(#form-helpers/campos). Inserindo campos
 
-Você pode criar todas as __tags__ de um formulário utilizando o método @$form->input()@, seguindo a seqüência de parâmetros abaixo. Você pode passar, no parâmetro @$options@, um __array__ contendo todos os atributos disponíveis para o elemento em questão.
-
-h3. @$form->input(@ string $name, string $value, array $options @)@
-
-|_. string $name | Nome do campo de formulário que você deseja criar |
-|_. string $value | Valor opcional do campo de formulário |
-|_. array $options | Array de opções e atributos do campo |
-
-h4. Criando campos de texto (@text@)
-
-pre. <?php echo $form->input("nome", "João da Silva", array("type"=>"text", "id"=>"seuNome")); ?>
-// Gerará o seguinte
-// <input type="text" name="nome" value="João da Silva" id="seuNome" />
-
-h4. Criando caixas de texto (@textarea@)
-
-pre. <?php echo $form->input("biografia", "Nasci em São Paulo.", array("type"=>"textarea", "id"=>"suaBiografia")); ?>
-// Gerará o seguinte
-// <textarea name="nome" id="suaBiografia">Nasci em São Paulo.</ textarea>
-
-h4. Criando campos de senha (@password@)
-
-pre. <?php echo $form->input("senha", null, array("type"=>"password", "id"=>"suaSenha")); ?>
-// Gerará o seguinte
-// <input type="password" name="senha" id="suaSenha" />
-
-h4. Criando caixas de seleção (@select@)
-
-pre. <?php echo $form->input("estado", "rj", array("type"=>"select", "options" => array("rj"=>"Rio de Janeiro", "sp" => "São Paulo") )); ?>
-// Gerará o seguinte
-// <select name="estado">
-//      <option name="rj" selected="selected">Rio de Janeiro</option>
-//      <option name="sp">São Paulo</option>
-// </select>
-
-p(note). *Nota:* Neste caso, você passa como segundo parâmetro do método @$form->input()@ a chave do campo que deve estar selecionado por padrão dentro do @select@.
-
-h4. Criando campos de arquivo (@file@)
-
-pre. <?php echo $form->input("foto", null, array("type"=>"file")); ?>
-// Gerará o seguinte
-// <input type="file" name="foto" />
-
-p(note). *Nota:* Sempre que você for fazer __upload__ de arquivos, deve acrescentar �  __tag__ de abertura do formulário o atributo @enctype@ com o valor @multipart/form-data@.
-
-h2. Finalizando e enviando o formulário
-
-Você geralmente coloca seu botão de envio de formulários logo antes do término do mesmo. Por esse motivo, você pode usar o mesmo método de encerramento do formulário para gerar - de maneira fácil - o botão de envio.
-
-h3. @$form->close(@ string $buttonValue, array $attributes @)@
-
-|_. string $buttonValue | Nome do botão de envio, caso você queira utilizá-lo |
-|_. array $attributes | Array de atributos do botão de envio |
-
-Passando apenas o método, sem qualquer parâmetro, você apenas encerra o formulário com a tag @</code>@.
-
-pre. <?php echo $form->close(); ?>
-// Gerará o seguinte
-// </form>
-
-Agora, passando também um parâmetro, você gerará um @input button@ antes do encerramento do formulário.
-
-pre. <?php echo $form->close("Enviar"); ?>
-// Gerará o seguinte
-// <input type="submit" name="Enviar" />
-// </form>
-
-Se você ainda precisar de outros atributos em seu botão, pode passar como segundo parâmetro do método @$form->close()@ um __array__ contendo estes atributos.
-
-pre. <?php echo $form->close("Enviar", array("id"=>"submitButton")); ?>
-// Gerará o seguinte
-// <input type="submit" name="Enviar" id="submitButton" />
-// </form>
-
-h2. Criando __labels__ para os campos
-
-É importante rotular seus campos, e usando o elemento @label@ você torna esta rotulagem ainda mais semântica. Você não precisa chamar métodos adicionais para rotular um campo, apenas deve incluir um atributo no __array__ de atributos do elemento que você deseja rotular.
-
-pre. <?php echo $form->input("company", null, array("type"=>"text", "id"=>"myCompany","label"=>"Sua Empresa")); ?>
-// Gerará o seguinte
-// <label for="myCompany">Sua Empresa
-// <input type="text" name="company" id="myCompany" />
-// </label>
+*Em breve!*
