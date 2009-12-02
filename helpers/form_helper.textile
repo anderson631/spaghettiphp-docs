@@ -49,7 +49,7 @@ pre(.brush: xml). <div class="input text">
 
 Como você pode notar, o método já criou toda a estrutura necessária para o campo: uma @<div>@ externa, um @<label>@ já com conteúdo, e nosso campo propriamente dito.
 
-Todos os campos gerados pelo @FormHelper@ tem basicamente a mesma estrutura. Mas isso não significa que você precisa se prender a ela. É possível modificar bastante essa estrutura através de um segundo parâmetro do método, um _array_ de atributos. Os atributos nesse _array_ serão passados diretamente para o @<input>@, exceto por alguns atributos especiais, vistos logo mais.
+Todos os campos gerados pelo @FormHelper@ tem basicamente a mesma estrutura. Mas isso não significa que você precisa se prender a ela. É possível modificar bastante essa estrutura através de um segundo parâmetro do método, um _array_ de atributos. Os atributos nesse _array_ serão passados diretamente para o @<input>@, exceto por alguns atributos especiais, que possuem outros comportamentos e não aparecem diretamente como atributos de um campo. Eles serão vistos logo mais.
 
 pre. echo $form->input("name", array("value" => "Spaghetti* Framework"));
 
@@ -58,7 +58,7 @@ pre. echo $form->input("name", array("value" => "Spaghetti* Framework"));
 pre. echo $form->input("username", array("label" => "Nome de Usuário"));
 // => <label for="FormUsername">Nome de Usuário</label>
 
-Outro atributo especial para um campo é o atributo @div@. Ele permite que sejam adicionados atributos à @<div>@ externa caso seja necessário. Passando um atributo em texto, ele se tornará a classe da @div@. Caso você forneça um _array_, este sobrescreverá todos os atributos do elemento (inclusive a classe do elemento).
+Outro atributo especial para um campo é o atributo @div@. Ele permite que sejam adicionados atributos à @<div>@ externa caso seja necessário. Passando um atributo em texto, ele se tornará a classe da @<div>@. Caso você forneça um _array_, este sobrescreverá todos os atributos do elemento (inclusive a classe do elemento).
 
 pre.. echo $form->input("name", array("div" => "input text left"));
 // => <div class="input text left">
@@ -69,4 +69,27 @@ echo $form->input("name", array("div" => array(
 // => <div id="input-name">
 
 h2(#form-helper/tipos). Tipos de campos
+
+Além de apenas campos de texto, @FormHelper::input()@ também pode criar outros tipos de campos, como campos de senha, _combo boxes_, _checkboxes_, botões _radio_, entre outros. Isso é feito através de outro atributo especial, @type@. os tipos possíveis de campos são os seguintes:
+
+|_. Tipo |_. Campo |
+| @text@ | Campo de texto |
+| @textarea@ | Caixa de texto multi-linha |
+| @password@ | Campo de senha |
+| @checkbox@ | Campo de caixa de seleção |
+| @radio@ | Botões _radio_ |
+| @select@ | Caixa de Seleção |
+| @date@ | Campo de seleção de data |
+| @hidden@ | Campo oculto |
+
+Além de poder definir o tipo de campo, @type@ também traz outras peculiaridades. A primeira delas é a classe da @<div>@ externa: ela não possui sempre o valor @input text@. A classe @input@ permanece, enquanto @text@ é trocado pelo tipo escolhido para o campo.
+
+pre. echo $form->input("message", array("type" => "textarea"));
+
+A saída do comando acima será:
+
+pre(.brush: xml). <div class="input textarea">
+	<label for="FormMessage">Message</label>
+	<textarea id="FormMessage" name="message"></textarea>
+</div>
 
