@@ -153,3 +153,5 @@ Como campos de data são mais complexos, eles recebem alguns parâmetros extras:
 | @currentDay@ | Dia a aparecer selecionado |
 | @currentMonth@ | Mês a aparecer selecionado  |
 | @currentYear@ | Ano a aparecer selecionado |
+
+Embora as opções @currentDay@, @currentMonth@ e @currentYear@ permitam selecionar a data atual manualmente, elas são complicadas demais. Teríamos que definir cada pedaço da data separadamente. O método pode fazer tudo isso sozinho, sem você precisar definir nada mais além de @value@. Você pode definir qualquer aceita por @strtotime()@, como @2009-01-01@, @-15 days@, @+1 month@, e assim por diante.
