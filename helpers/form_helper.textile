@@ -34,4 +34,26 @@ echo $form->close("Enviar", array(
 
 h2(#form-helpers/campos). Inserindo campos
 
-*Em breve!*
+No Spaghetti*, apenas um método é usado diretamente para criar vários tipos diferentes de campos de formulário. @FormHelper::input()@ pode criar campos de texto e de senha, _combo boxes_, _checkboxes_, botões _radio_, entre outros, apenas com a modificação de um parâmetro.
+
+@FormHelper::input()@ chamado com o primeiro parâmetro contendo o nome do campo gerará um campo de texto comum, mas já contendo toda a marcação auxiliar para estilização.
+
+pre. echo $form->input("name");
+
+O campo acima geraria a seguinte marcação, automaticamente:
+
+pre(.brush: xml). <div class="input text">
+	<label for="FormName">Name</label>
+	<input id="FormName" type="text" name="name" />
+</div>
+
+Como você pode notar, o método já criou toda a estrutura necessária para o campo: uma @<div>@ externa, um @<label>@ já com conteúdo, e nosso campo propriamente dito.
+
+Todos os campos gerados pelo @FormHelper@ tem basicamente a mesma estrutura. Mas isso não significa que você precisa se prender a ela. É possível modificar bastante essa estrutura através de um segundo parâmetro do método, um _array_ de atributos. Os atributos nesse _array_ serão passados diretamente para o @<input>@, exceto por alguns atributos especiais, vistos logo mais.
+
+pre. echo $form->input("name", array("value" => "Spaghetti* Framework"));
+
+@FormHelper::input()@ gera uma tag @<label>@ de acordo com o nome do campo a ser gerado. Se um campo se chamar @name@, seu _label_ será @Name@, se o campo se chamar @last_name@, o _label_ será @Last Name@, e assim por diante. Como nem sempre os nomes dos campos fazem sentido para o usuário, é possível alterar manualmente esse valor para que ele faça mais sentido. Isso é feito através do atributo especial @label@:
+
+pre. echo $form->input("username", array("label" => "Nome de Usuário"));
+// => <label for="FormUsername">Nome de Usuário</label>
