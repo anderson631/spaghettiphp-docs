@@ -57,3 +57,16 @@ pre. echo $form->input("name", array("value" => "Spaghetti* Framework"));
 
 pre. echo $form->input("username", array("label" => "Nome de Usuário"));
 // => <label for="FormUsername">Nome de Usuário</label>
+
+Outro atributo especial para um campo é o atributo @div@. Ele permite que sejam adicionados atributos à @<div>@ externa caso seja necessário. Passando um atributo em texto, ele se tornará a classe da @div@. Caso você forneça um _array_, este sobrescreverá todos os atributos do elemento (inclusive a classe do elemento).
+
+pre.. echo $form->input("name", array("div" => "input text left"));
+// => <div class="input text left">
+
+echo $form->input("name", array("div" => array(
+	"id" => "input-name"
+)));
+// => <div id="input-name">
+
+h2(#form-helper/tipos). Tipos de campos
+
