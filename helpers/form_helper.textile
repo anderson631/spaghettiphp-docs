@@ -78,7 +78,7 @@ Além de apenas campos de texto, @FormHelper::input()@ também pode criar outros
 | @password@ | Campo de senha |
 | @checkbox@ | Campo de caixa de seleção |
 | @radio@ | Botões _radio_ |
-| @select@ | Caixa de Seleção |
+| @select@ | Caixa de seleção |
 | @date@ | Campo de seleção de data |
 | @hidden@ | Campo oculto |
 
@@ -93,3 +93,63 @@ pre(.brush: xml). <div class="input textarea">
 	<textarea id="FormMessage" name="message"></textarea>
 </div>
 
+Outros tipos de campos também requerem ou permitem que outros atributos sejam informados. No caso de @select@ e @radio@, um atributo obrigatório é @options@, as opções disponíveis para seleção nesses campos. Esse atributo deve ser um _array_ (associativo ou não) contendo o valor e o texto dessas opções.
+
+pre. echo $form->input("type", array(
+	"type" => "radio",
+	"options" => array(
+		"text" => "Text field",
+		"passoword" => "Password field",
+		"textarea" => "Textarea field"
+	)
+));
+
+O comando acima terá a saída mostrada abaixo. Note que, para @type=radio@, a marcação é ligeiramente diferente por causa das peculiaridades dos botões _radio_.
+
+pre(.brush: xml). <div class="input radio">
+	<fieldset>
+		<legend>Type</legend>
+		<input id="TypeText" type="radio" name="type" value="text"/>
+		<label for="TypeText">Text field</label>
+		<input id="TypePassword" type="radio" name="type" value="password"/>
+		<label for="TypePassword">Password field</label>
+		<input id="TypeTextarea" type="radio" name="type" value="textarea"/>
+		<label for="TypeTextarea">Textarea field</label>
+	</fieldset>
+</div>
+
+Outros campos bem particulares são os do tipo @date@, para seleção de data. Como é difícil validar a entrada de dados do usuário, esse tipo de campo gera 3 caixas de seleção: uma com uma lista de dias, uma segunda com uma lista de meses e ainda uma terceira com uma lista de anos. Um simples campo @date@ terá a seguinte saída:
+
+pre(.brush: xml). <div class="input date">
+	<label for="FormDate">Date</label>
+	<select id="FormDateD" name="date[d]">
+		...
+	</select>
+	<select id="FormDateM" name="date[m]">
+		...
+	</select>
+	<select id="FormDateY" name="date[y]">
+		...
+	</select>
+</div>
+
+Em seus _controllers_ ou _models_, você também receberá os dados de uma forma diferente, semelhante à seguinte:
+
+pre. Array
+(
+    [date] => Array
+        (
+			[d] => 01,
+			[m] => 01,
+			[y] => 2009
+        )
+)
+
+Como campos de data são mais complexos, eles recebem alguns parâmetros extras:
+
+|_. Parâmetro |_. Descrição |
+| @startYear@ | Ano inicial a aparecer na listagem |
+| @endYear@ | Ano final a aparecer na listagem |
+| @currentDay@ | Dia a aparecer selecionado |
+| @currentMonth@ | Mês a aparecer selecionado  |
+| @currentYear@ | Ano a aparecer selecionado |
