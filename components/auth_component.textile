@@ -97,3 +97,12 @@ Se você tentar um nome de usuário ou senha incorretos, ou tentar acessar uma p
 
 pre. $this->AuthComponent->loginError = "Seu nome de usuário ou senha estão incorretos";
 $this->AuthComponent->authError = "Você precisa estar autenticado para acessar essa área";
+
+h2(#auth-component/dados). Retornando dados do usuário
+
+Depois de autenticado, você precisará em algum momento retornar algum dado do usuário. Isso pode ser feito através de @AuthComponent::user()@:
+
+pre. // retornando todos os dados do usuário
+$this->set("user", $this->AuthComponent->user());
+// retornando apenas o nome do usuário
+$this->set("username", $this->AuthComponent->user("username"));
